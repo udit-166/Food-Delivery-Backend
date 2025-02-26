@@ -1,0 +1,15 @@
+server:
+  port: 7083
+  
+spring:
+  application:
+    name: API-GATEWAY
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true 
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:7084/eureka
