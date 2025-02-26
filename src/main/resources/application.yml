@@ -1,0 +1,23 @@
+server:
+  port: 7085
+spring:
+  application:
+    name: CONFIG-SERVICE
+    
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/udit-166/microservice-configuration
+          clone-on-start: true
+          force-pull: true
+          default-label: main
+ 
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true 
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:7084/eureka
