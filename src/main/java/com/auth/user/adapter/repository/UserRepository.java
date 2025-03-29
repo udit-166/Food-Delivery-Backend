@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.entity.User;
 
+
 public interface UserRepository {
 	
 	User save(User userData);
@@ -18,6 +19,8 @@ public interface UserRepository {
 	void deleteById(UUID id);
 	
 	List<Address> getAddressByUserId(UUID userId);
+	
+	User findUserByPhoneNumber(String phoneNumber);
 	
 	
 }

@@ -63,6 +63,7 @@ public class User {
 	
 	private String fcmToken;
 	
+	private String device_id;
 	
 
 }

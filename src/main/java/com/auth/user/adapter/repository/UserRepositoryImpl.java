@@ -7,8 +7,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.auth.user.adapter.mapper.UserMapper;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.entity.User;
+import com.auth.user.core.model.UserDto;
 import com.auth.user.core.repository.AddressRepositories;
 import com.auth.user.core.repository.UserRepositories;
 
@@ -18,7 +20,10 @@ public class UserRepositoryImpl implements UserRepository{
 	@Autowired
 	private UserRepositories userRepository;
 	
+	@Autowired
 	private AddressRepositories addressRepository;
+	
+	private UserMapper userMapper;
 
 	@Override
 	public User save(User userData) {
@@ -43,6 +48,12 @@ public class UserRepositoryImpl implements UserRepository{
 	@Override
 	public List<Address> getAddressByUserId(UUID userId) {
 		return addressRepository.findByUserId(userId);
+	}
+
+	@Override
+	public User findUserByPhoneNumber(String phoneNumber) {
+		User user = userRepository.findByPhone(phoneNumber);
+		return user;
 	}
 
 }
