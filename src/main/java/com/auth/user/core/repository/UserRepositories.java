@@ -15,5 +15,5 @@ public interface UserRepositories extends JpaRepository<User, UUID>{
 	
 	User findByEmail(String emailId);
 	User findByPhone(String phone);
-
+	User findByGoogleId(String googleId);
 }

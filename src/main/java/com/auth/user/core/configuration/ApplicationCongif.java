@@ -1,4 +1,4 @@
-package com.auth.user.core.utils;
+package com.auth.user.core.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,10 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class ApplicationConfiguration {
-
+public class ApplicationCongif {
+	
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				).authorizeHttpRequests(auth->auth
 						.requestMatchers("/auth/login","/auth/register").permitAll()

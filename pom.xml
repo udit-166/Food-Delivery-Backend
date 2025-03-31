@@ -63,7 +63,6 @@
 	<dependency>
 	<groupId>org.apache.httpcomponents</groupId>
 	<artifactId>httpcore</artifactId>
-	<version>4.4.14</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
 	<dependency>
@@ -77,6 +76,34 @@
 	    <artifactId>mapstruct-processor</artifactId>
 	    <version>1.6.3</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-client -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-client</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.google.api-client</groupId>
+    <artifactId>google-api-client</artifactId>
+    <version>2.2.0</version> <!-- Use the latest version -->
+</dependency>
+
+<dependency>
+    <groupId>com.google.http-client</groupId>
+    <artifactId>google-http-client-gson</artifactId>
+    <version>1.43.3</version>
+</dependency>
+
+<dependency>
+    <groupId>com.google.oauth-client</groupId>
+    <artifactId>google-oauth-client</artifactId>
+    <version>1.34.1</version>
+</dependency>
+<dependency>
+    <groupId>com.google.http-client</groupId>
+    <artifactId>google-http-client-jackson2</artifactId>
+    <version>1.43.3</version> <!-- Use the latest version -->
+</dependency>
+
 	<dependency>
 	<groupId>io.jsonwebtoken</groupId>
 	<artifactId>jjwt-api</artifactId>
@@ -97,6 +124,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+		<dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		    <version>2.8.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>

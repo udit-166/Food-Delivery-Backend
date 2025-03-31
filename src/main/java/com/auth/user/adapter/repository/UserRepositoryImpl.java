@@ -56,4 +56,10 @@ public class UserRepositoryImpl implements UserRepository{
 		return user;
 	}
 
+	@Override
+	public User findByGoogleId(String googleId) {
+		User user = userRepository.findByGoogleId(googleId);
+		return user;
+	}
+
 }

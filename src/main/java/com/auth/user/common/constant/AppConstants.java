@@ -12,5 +12,7 @@ public class AppConstants {
 	public static final String AUTHORIZATION = "Authorization";
 	
 	public static final long EXPIRATION_TIME = 1000*60*60*24;
+	
+	public static final String CLIENT_ID = "326597451983-4heq0h4d94pcnvku860ie4bfjmdfgtag.apps.googleusercontent.com";
 
 }

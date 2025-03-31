@@ -27,9 +27,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = AppConstants.FDAUSER)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class User {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
@@ -37,14 +38,11 @@ public class User {
 	@Column(nullable = false)
 	private String username;
 	
-	@Column(unique = true, nullable = false)
+	@Column(unique = true, nullable = true)
 	private String email;
 	
-	@Column(unique = true, nullable = false)
+	@Column(unique = true, nullable = true)
 	private String phone;
-	
-	@Column(nullable = false)
-	private String password;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;
@@ -65,5 +63,6 @@ public class User {
 	
 	private String device_id;
 	
-
+	@Column(unique = true, nullable = true)
+	private String googleId;
 }
