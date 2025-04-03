@@ -1,17 +1,17 @@
-package com.auth.user.core.usecase;
+package com.auth.user.adapter.service;
 
 import java.util.UUID;
 
 import com.auth.user.core.entity.User;
 import com.auth.user.core.model.UserDto;
 
-public interface AuthUsecase {
+public interface AuthService {
 
 	public UserDto login(String phoneNumber);
 	
-	public UserDto register (User user);
-
+	public UserDto register(User user); 
+	
 	public UserDto findByGoogleId(String googleId);
 	
-	public String refreshToken(String phone_number);
+	public String refreshJwtToken(String phone);
 }

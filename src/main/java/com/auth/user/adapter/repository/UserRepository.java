@@ -22,6 +22,8 @@ public interface UserRepository {
 	
 	User findUserByPhoneNumber(String phoneNumber);
 	
+	User findUserByEmail(String email);
+	
 	User findByGoogleId(String googleId);
 	
 }

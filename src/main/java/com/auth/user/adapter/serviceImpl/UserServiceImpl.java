@@ -1,39 +1,61 @@
 package com.auth.user.adapter.serviceImpl;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.auth.user.adapter.service.UserService;
-import com.auth.user.core.entity.User;
+import com.auth.user.core.entity.Address;
+import com.auth.user.core.model.Location;
+import com.auth.user.core.model.Role;
 import com.auth.user.core.model.UserDto;
-import com.auth.user.core.usecase.AuthUsecase;
+import com.auth.user.core.usecase.UserUsecase;
 
 @Service
 public class UserServiceImpl implements UserService{
-
+	
 	@Autowired
-	private AuthUsecase authUsecase;
-	
+	private UserUsecase userUsecase;
+
 	@Override
-	public UserDto login(String phoneNumber) {
-		return authUsecase.login(phoneNumber);
+	public UserDto findUserByPhoneNumberOrEmail(String phone_number, String email) {
+		return userUsecase.findUserByPhoneNumberOrEmail(phone_number, email);
 	}
 
 	@Override
-	public UserDto register(User user) {
-		return authUsecase.register(user);
+	public UserDto updateUserProfile(UserDto userForEdit) {
+		
+		return userUsecase.updateuserProfile(userForEdit);
 	}
 
 	@Override
-	public UserDto findByGoogleId(String googleId) {
-		return authUsecase.findByGoogleId(googleId);
+	public Role getUserRole(UUID userId) {
+		return userUsecase.getUserRole(userId);
 	}
 
 	@Override
-	public String refreshJwtToken(String phone) {
-		return authUsecase.refreshToken(phone);
+	public Address getCurrentAddress(Location location, UUID userId) {
+		
+		return userUsecase.getCurrentaddress(location, userId);
 	}
-	
+
+	@Override
+	public List<Address> getAllAddressOfUser(UUID userId) {
+		return userUsecase.getAllAddressOfUser(userId);
+	}
+
+	@Override
+	public List<Address> saveAddress(UUID userId, Address address) {
+		return userUsecase.saveAddress(userId, address);
+	}
+
+	@Override
+	public List<Address> updatedAddress(Address address) {
+		
+		return userUsecase.updatedAddress(address);
+	}
 	
 
 }

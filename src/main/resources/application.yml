@@ -11,6 +11,6 @@ spring:
     password: Tuktuk@123
 
 server:
-  port: 8082
+  port: 8090
 #  servlet:
 #    context-path: /auth-service

@@ -62,4 +62,10 @@ public class UserRepositoryImpl implements UserRepository{
 		return user;
 	}
 
+	@Override
+	public User findUserByEmail(String email) {
+		User user = userRepository.findByEmail(email);
+		return user;
+	}
+
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.auth.user.adapter.service.UserService;
+import com.auth.user.adapter.service.AuthService;
 import com.auth.user.core.entity.User;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.LoginResponse;
@@ -25,7 +25,7 @@ public class AuthController {
 	private final GoogleTokenValidator googleTokenValidator;
 	
 	@Autowired
-	private UserService userService;
+	private AuthService userService;
 	
 	public AuthController(JwtAuthentication jwtAuthentication, GoogleTokenValidator googleTokenValidator) {
 		this.jwtAuthentication = jwtAuthentication;

@@ -1,11 +1,14 @@
 package com.auth.user.core.usecase;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.auth.user.adapter.mapper.UserMapper;
 import com.auth.user.adapter.repository.UserRepository;
 import com.auth.user.core.entity.User;
+import com.auth.user.core.model.UserDetailsResponse;
 import com.auth.user.core.model.UserDto;
 import com.auth.user.core.utils.JwtAuthentication;
 
@@ -67,6 +70,7 @@ public class AuthUsecaseImpl implements AuthUsecase{
 		String token = jwtAuthentication.generateToken(phone_number);
 		return token;
 	}
+
 
 	
 }
