@@ -10,6 +10,7 @@ import com.auth.user.adapter.service.UserService;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.Role;
+import com.auth.user.core.model.UpdateMetaDataRequest;
 import com.auth.user.core.model.UserDto;
 import com.auth.user.core.usecase.UserUsecase;
 
@@ -55,6 +56,16 @@ public class UserServiceImpl implements UserService{
 	public List<Address> updatedAddress(Address address) {
 		
 		return userUsecase.updatedAddress(address);
+	}
+
+	@Override
+	public UserDto updateUserMetaDataInfo(UpdateMetaDataRequest metaData) {
+		return userUsecase.updateUserMetaDataInfo(metaData);
+	}
+
+	@Override
+	public UserDto deActivateUser(UUID userId) {
+		return userUsecase.deActivateUser(userId);
 	}
 	
 

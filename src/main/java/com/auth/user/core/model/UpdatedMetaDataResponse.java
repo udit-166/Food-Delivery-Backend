@@ -7,25 +7,16 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserDto {
+public class UpdatedMetaDataResponse {
+
 
 	private UUID id;
-	
-	private String username;
-	
-	private String email;
-	
-	private String phone;
-	
-	private Role role;
-	
-	private String profileImageUrl;
-	
-	private boolean isVerified;
 	
 	private String fcmToken;
 	
 	private String device_id;
 	
 	private Double app_version;
+	
+	private String message;
 }

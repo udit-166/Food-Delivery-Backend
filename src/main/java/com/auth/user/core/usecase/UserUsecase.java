@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.Role;
+import com.auth.user.core.model.UpdateMetaDataRequest;
 import com.auth.user.core.model.UserDto;
 
 public interface UserUsecase {
@@ -17,4 +18,6 @@ public interface UserUsecase {
 	public List<Address> getAllAddressOfUser(UUID userId);
 	public List<Address> saveAddress(UUID userId, Address address);
 	public List<Address> updatedAddress(Address address);
+	public UserDto updateUserMetaDataInfo(UpdateMetaDataRequest metaData);
+	public UserDto deActivateUser(UUID userId);
 }

@@ -12,6 +12,7 @@ import com.auth.user.core.entity.User;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.LoginResponse;
 import com.auth.user.core.model.UserDto;
+import com.auth.user.core.model.otpResponse;
 import com.auth.user.core.utils.GoogleTokenValidator;
 import com.auth.user.core.utils.JwtAuthentication;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
@@ -25,7 +26,8 @@ public class AuthController {
 	private final GoogleTokenValidator googleTokenValidator;
 	
 	@Autowired
-	private AuthService userService;
+	private AuthService authService;
+	
 	
 	public AuthController(JwtAuthentication jwtAuthentication, GoogleTokenValidator googleTokenValidator) {
 		this.jwtAuthentication = jwtAuthentication;
@@ -47,7 +49,7 @@ public class AuthController {
 				String email = payload.getEmail();
 				String googleId = payload.getSubject();
 				
-				UserDto user = userService.findByGoogleId(googleId);
+				UserDto user = authService.findByGoogleId(googleId);
 				
 				if(user == null) {
 					User userToRegister = new User();
@@ -58,7 +60,7 @@ public class AuthController {
 					userToRegister.setLocation(location);
 					userToRegister.setVerified(true);
 					
-					UserDto registerUser = userService.register(userToRegister);
+					UserDto registerUser = authService.register(userToRegister);
 					String jwtToken = jwtAuthentication.generateToken(registerUser.getPhone());
 					
 					response.setUser(registerUser);
@@ -78,7 +80,7 @@ public class AuthController {
 			}
 		
 		if(phoneNumber != null) {
-			UserDto user = userService.login(phoneNumber);
+			UserDto user = authService.login(phoneNumber);
 			
 			if(user!=null) {
 				String token = jwtAuthentication.generateToken(phoneNumber);
@@ -107,7 +109,7 @@ public class AuthController {
 	public ResponseEntity<LoginResponse> registerUser(@RequestParam User user){
 		try {
 			LoginResponse response  =  new LoginResponse();
-			UserDto existUser = userService.login(user.getPhone());
+			UserDto existUser = authService.login(user.getPhone());
 			
 			if(existUser != null) {
 				response.setUser(null);
@@ -115,7 +117,7 @@ public class AuthController {
 				response.setJwt(null);
 				return new ResponseEntity<>(response,HttpStatus.CONFLICT);
 			}
-			UserDto registerUser = userService.register(user);
+			UserDto registerUser = authService.register(user);
 			String token = jwtAuthentication.generateToken(registerUser.getPhone());
 			
 			response.setUser(registerUser);
@@ -134,10 +136,36 @@ public class AuthController {
 	
 	public ResponseEntity<String> refreshToken(@RequestParam String phone_number){
 		try {
-			String token = userService.refreshJwtToken(phone_number);
+			String token = authService.refreshJwtToken(phone_number);
 			return new ResponseEntity<String>(token,HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<String>("Internal Server Error.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<String> sendOtp(@RequestParam String phone_number){
+		try {
+			authService.sendOtp(phone_number);
+			return new ResponseEntity<>("The otp send successfully!!", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<String> verifyOtp(@RequestParam String phone_number, @RequestParam String otp){
+		try {
+			if(phone_number == null || otp == null) {
+				return new ResponseEntity<String>("The parameters are missing!",HttpStatus.BAD_REQUEST);
+			}
+			
+			if(!authService.validateOtp(phone_number, otp)) {
+				return new ResponseEntity<String>("The otp is incorrect or expired. Click on resend to get new OTP",HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<String>("The phone_number is verified successfully!!", HttpStatus.OK);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return new ResponseEntity<String>("The service is not running.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

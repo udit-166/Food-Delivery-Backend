@@ -64,6 +64,8 @@ public class User {
 	
 	private String device_id;
 	
+	private Double app_version;
+	
 	@Column(unique = true, nullable = true)
 	private String googleId;
 }

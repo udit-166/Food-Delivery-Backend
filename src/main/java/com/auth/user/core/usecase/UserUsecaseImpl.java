@@ -14,6 +14,7 @@ import com.auth.user.core.entity.Address;
 import com.auth.user.core.entity.User;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.Role;
+import com.auth.user.core.model.UpdateMetaDataRequest;
 import com.auth.user.core.model.UserDto;
 import com.auth.user.core.utils.Haversine;
 
@@ -150,6 +151,39 @@ public class UserUsecaseImpl implements UserUsecase{
 		UUID userId = result.getUser().getId();
 		List<Address> addresses = userRepository.getAddressByUserId(userId);
 		return addresses;
+	}
+
+	@Override
+	public UserDto updateUserMetaDataInfo(UpdateMetaDataRequest metaData) {
+		 Optional<User> user = userRepository.findById(metaData.getId());
+		 
+		 if(user.isPresent()) {
+			 User existingUser = user.get();
+			 existingUser.setApp_version(metaData.getApp_version());
+			 existingUser.setDevice_id(metaData.getDevice_id());
+			 existingUser.setFcmToken(metaData.getFcmToken());
+			 
+			 userRepository.save(existingUser);
+			 
+			 UserDto result = userMapper.entityToDto(existingUser);
+			 return result;
+		 }
+		return null;
+	}
+
+	@Override
+	public UserDto deActivateUser(UUID userId) {
+		 Optional<User> user = userRepository.findById(userId);
+		 
+		 if(user.isPresent()) {
+			 User existingUser = user.get();
+			 existingUser.setActive(false);
+			 
+			User temp =  userRepository.save(existingUser);
+			UserDto result = userMapper.entityToDto(temp);
+			return result;
+		 }
+		 return null;
 	}
 
 	

@@ -14,4 +14,17 @@ public interface AuthUsecase {
 	public UserDto findByGoogleId(String googleId);
 	
 	public String refreshToken(String phone_number);
+	
+	public String generateOtp(String phone_number);
+	
+	public void sendOtp(String phone_number);
+	
+	public String getOtp(String phoneNumber);
+	
+	public boolean validateOtp(String phoneNumber, String otp);
+	
+	public void deleteOtp(String phoneNumber);
+	
+	
 }
+

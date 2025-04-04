@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth.user.adapter.service.UserService;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.model.AddressResponse;
+import com.auth.user.core.model.DeactivateUserResponse;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.Role;
 import com.auth.user.core.model.RoleResponse;
+import com.auth.user.core.model.UpdateMetaDataRequest;
+import com.auth.user.core.model.UpdatedMetaDataResponse;
 import com.auth.user.core.model.UserDetailsResponse;
 import com.auth.user.core.model.UserDto;
 
@@ -222,6 +226,61 @@ public class UserController {
 			AddressResponse response = new AddressResponse();
 			response.setAddresses(null);
 			response.setMessage("The error occur in code!!");
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping("/updateUserMetaData")
+	public ResponseEntity<UpdatedMetaDataResponse> updateUserMetaData(@RequestParam UpdateMetaDataRequest dataRequest){
+		try {
+			UserDto user = userService.updateUserMetaDataInfo(dataRequest);
+			UpdatedMetaDataResponse response = new UpdatedMetaDataResponse();
+			if(user==null) {
+				response.setMessage("The user didn't found!");
+				response.setApp_version(dataRequest.getApp_version());
+				response.setDevice_id(dataRequest.getDevice_id());
+				response.setFcmToken(dataRequest.getFcmToken());
+				response.setId(dataRequest.getId());
+				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+			}
+			response.setMessage("The user meta data has been updated successfully!");
+			response.setApp_version(user.getApp_version());
+			response.setDevice_id(user.getDevice_id());
+			response.setFcmToken(user.getFcmToken());
+			response.setId(user.getId());
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			UpdatedMetaDataResponse response = new UpdatedMetaDataResponse();
+			response.setMessage("The service didn't run due to error!");
+			response.setApp_version(dataRequest.getApp_version());
+			response.setDevice_id(dataRequest.getDevice_id());
+			response.setFcmToken(dataRequest.getFcmToken());
+			response.setId(dataRequest.getId());
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@DeleteMapping("/deleteAccount")
+	public ResponseEntity<DeactivateUserResponse> deActivateUser(@RequestParam UUID userId){
+		try {
+			DeactivateUserResponse response = new DeactivateUserResponse();
+			UserDto user = userService.deActivateUser(userId);
+			if(user == null) {
+				response.setId(userId);
+				response.setActive(true);
+				response.setMessage("the user not found!!");
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			}
+			
+			response.setId(userId);
+			response.setActive(false);
+			response.setMessage("The user deleted successfully!");
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			DeactivateUserResponse response = new DeactivateUserResponse();
+			response.setId(userId);
+			response.setActive(true);
+			response.setMessage("Error occur in this service");
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

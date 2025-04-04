@@ -9,6 +9,14 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: Tuktuk@123
+ 
+
+  data:
+    redis:
+      host: redis-18951.c15.us-east-1-4.ec2.redns.redis-cloud.com:18951
+      port: 18951
+      username: default
+      password: mjM8DVtsyuEWbh67nQGB2AuixBnsjhLx
 
 server:
   port: 8090
