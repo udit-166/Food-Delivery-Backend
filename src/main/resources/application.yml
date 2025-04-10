@@ -1,0 +1,14 @@
+server:
+  port: 8091 #The port of this particular service will run independently
+spring:
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+# the local database connectivity configuration below
+  datasource:
+    url: jdbc:postgresql://localhost:5432/restaurant_service
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: Tuktuk@123		
