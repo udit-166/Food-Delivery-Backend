@@ -1,14 +1,22 @@
 package com.food.restaurant.core.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.food.restaurant.adapter.constant.AppConstant;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = AppConstant.RESTAURANT_ENTITY)
 public class Restaurant {
 
 	
@@ -26,14 +35,43 @@ public class Restaurant {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
+	@Column(nullable = true)
 	private String name;
 	
-	private String imageUrl;
+	@Column(nullable = true)
+	private String image_url;
 	
-	private  Double averageRating;
+	@Column(nullable = true)
+	private  Double average_rating;
 	
-	private Integer totalRating;
+	@Column(nullable = true)
+	private Integer total_rating;
+	
+	@Column(nullable = true)
+	private String restaurant_email;
+	
+	@Column(nullable = true)
+	private String customer_care_number;
+	
+	@Column(nullable = true)
+	private String opening_time;
+	
+	@Column(nullable = true)
+	private String closing_time;
+	
+	private UUID user_id;
+	
+	private Boolean is_active;
+	
 	
 	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+	@Column(nullable = true)
     private List<FoodItem> foodItems;
+	
+	@CreationTimestamp
+	private LocalDateTime created_at;
+	
+	@UpdateTimestamp
+	private LocalDateTime updated_at;
+	
 }

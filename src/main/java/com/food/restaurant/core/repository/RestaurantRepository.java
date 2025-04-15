@@ -1,5 +1,6 @@
 package com.food.restaurant.core.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ import com.food.restaurant.core.entity.Restaurant;
 public interface RestaurantRepository extends JpaRepository<Restaurant, UUID>{
 	
 	Restaurant findByName(String name);
+
+	Optional<Restaurant> findByNameContainingIgnoreCase(String query);
 }

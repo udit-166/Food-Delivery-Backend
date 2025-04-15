@@ -1,6 +1,7 @@
 package com.food.restaurant.core.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,47 +9,34 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.food.restaurant.adapter.constant.AppConstant;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table(name = AppConstant.FOOD_ITEM_ENTITY)
-public class FoodItem {
+@Table(name = AppConstant.CATEGORIES_ENTITY)
+public class Categories {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	private String name;
+	private String category;
 	
-	private String description;
+	private String ImageUrl;
 	
-	@ManyToOne
-    @JoinColumn(name = "category_id")
-	private Categories category;
-	
-	private Integer price;
-	
-	private Double rating;
-	
-	private String imageUrl;
-	
-	@ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+	private List<FoodItem> food_item;
 	
 	@CreationTimestamp
 	private LocalDateTime created_at;

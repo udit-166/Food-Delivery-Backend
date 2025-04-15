@@ -1,5 +1,7 @@
 package com.food.restaurant.adapter.repository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.food.restaurant.core.entity.Restaurant;
@@ -19,6 +21,11 @@ public class RestaurantRepositoriesImpl implements RestaurantRepositories{
 	@Override
 	public Restaurant save(Restaurant newRestaurant) {
 		return restaurantRepository.save(newRestaurant);
+	}
+
+	@Override
+	public List<Restaurant> getAllRestaurant() {
+		return restaurantRepository.findAll();
 	}
 
 }
