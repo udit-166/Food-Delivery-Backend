@@ -1,14 +1,32 @@
 package com.food.restaurant.core.usecase;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.food.restaurant.adapter.constant.AppConstant;
 import com.food.restaurant.adapter.model.AddFoodItemDto;
 import com.food.restaurant.adapter.model.AddFoodItemResponse;
+import com.food.restaurant.adapter.model.CategoryMenuDto;
+import com.food.restaurant.adapter.model.CategoryMenuResponse;
+import com.food.restaurant.adapter.model.FoodItemDto;
+import com.food.restaurant.adapter.repository.CategoryRepository;
 import com.food.restaurant.adapter.repository.FoodItemRepositories;
 import com.food.restaurant.adapter.repository.RestaurantRepositories;
+import com.food.restaurant.core.entity.Categories;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.entity.Restaurant;
 
@@ -19,54 +37,59 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 	
 	private FoodItemRepositories foodItemRepositories;
 	
+	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+	
 	public RestaurantUsecaseimpl() {
 		
 	}
 
 	@Override
-	public AddFoodItemResponse addFoodItems(AddFoodItemDto foodItem) {
-		Restaurant restaurant = restaurantRepositories.findByName(foodItem.getRestaurant_name());
-        if(restaurant == null){
-            // Create new restaurant
-            Restaurant newRestaurant = new Restaurant();
-            newRestaurant.setName(foodItem.getRestaurant_name());
-            newRestaurant.setImage_url(foodItem.getImageUrl());
-            newRestaurant.setAverage_rating(foodItem.getRating());
-            newRestaurant.setTotal_rating(1);
-            restaurantRepositories.save(newRestaurant);
-        };
+	public AddFoodItemResponse addFoodItems(FoodItem foodItem) {
+		if (foodItem.getRestaurant() == null || foodItem.getRestaurant().getId() == null) {
+		    AddFoodItemResponse failedResponse = new AddFoodItemResponse();
+		    failedResponse.setMessage("Restaurant ID is missing or null. Food item not added.");
+		    return failedResponse;
+		}
 
-		    // If restaurant exists, update rating
-		    if (restaurant.getId() != null) {
-		        double totalRating = restaurant.getAverage_rating() * restaurant.getTotal_rating();
-		        int newTotalRatings = restaurant.getTotal_rating() + 1;
-		        double newAverageRating = (totalRating + foodItem.getRating()) / newTotalRatings;
-		
-		        restaurant.setAverage_rating(newAverageRating);
-		        restaurant.setTotal_rating(newTotalRatings);
-		        restaurantRepositories.save(restaurant);
-		    }
-		
-		    // Add food item
-		    FoodItem foodItem1 = new FoodItem();
-		    foodItem1.setName(foodItem.getName());
-		    foodItem1.setCategory(foodItem.getCategory());
-		    foodItem1.setDescription(foodItem.getDescription());
-		    foodItem1.setPrice(foodItem.getPrice());
-		    foodItem1.setRating(foodItem.getRating());
-		    foodItem1.setImageUrl(foodItem.getImageUrl());
-		    foodItem1.setRestaurant(restaurant);
-		
-		    foodItemRepositories.save(foodItem1);
-		    
-		    //setting the data in response data format
-		    
-		    AddFoodItemResponse response = new AddFoodItemResponse();
-		    
-		    response.setAddFoodItemDto(foodItem);
-		    response.setMessage("Add Food Item successfully !!");
-		    
-		    return response;
+		// Validate category_id
+		if (foodItem.getCategory() == null || foodItem.getCategory().getId() == null) {
+		    AddFoodItemResponse failedResponse = new AddFoodItemResponse();
+		    failedResponse.setMessage("Category ID is missing or null. Food item not added.");
+		    return failedResponse;
+		}
+
+		// Fetch restaurant and category from DB
+		Optional<Restaurant> optionalRestaurant = restaurantRepositories.findById(foodItem.getRestaurant().getId());
+		Optional<Categories> optionalCategory = categoryRepository.findById(foodItem.getCategory().getId());
+
+		if (optionalRestaurant.isEmpty() || optionalCategory.isEmpty()) {
+		    AddFoodItemResponse failedResponse = new AddFoodItemResponse();
+		    failedResponse.setMessage("Restaurant or Category not found in database. Food item not added.");
+		    return failedResponse;
+		}
+
+		// Add food item
+		FoodItem foodItem1 = new FoodItem();
+		foodItem1.setName(foodItem.getName());
+		foodItem1.setDescription(foodItem.getDescription());
+		foodItem1.setPrice(foodItem.getPrice());
+		foodItem1.setRating(foodItem.getRating());
+		foodItem1.setImageUrl(foodItem.getImageUrl());
+		foodItem1.setRestaurant(optionalRestaurant.get());
+		foodItem1.setCategory(optionalCategory.get());
+
+		foodItemRepositories.save(foodItem1);
+
+		// Prepare response
+		AddFoodItemResponse response = new AddFoodItemResponse();
+		response.setMessage("Food item added successfully!");
+		return response;
 		}
 
 	@Override
@@ -109,5 +132,47 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		restaurantRepositories.save(deleteRestaurant);
 		
 	}
+
+	@Override
+	public List<CategoryMenuDto> getMenuOfRestaurant(UUID restaurant_id) {
+		String cacheKey = AppConstant.MENU_CACHE_PREFIX + restaurant_id.toString();
+	    String cachedJson = stringRedisTemplate.opsForValue().get(cacheKey);
+	    if (cachedJson != null) {
+	        try {
+	            return objectMapper.readValue(
+	                cachedJson,
+	                new TypeReference<List<CategoryMenuDto>>() {}
+	            );
+	        } catch (JsonProcessingException e) {
+	            throw new RuntimeException("Failed to parse cached menu JSON", e);
+	        }
+	    }
+	    List<FoodItem> foodItems = foodItemRepositories.findAllByRestaurant_Id(restaurant_id);
+
+	    Map<String, List<FoodItemDto>> grouped = foodItems.stream()
+	    	    .collect(Collectors.groupingBy(
+	    	        item -> item.getCategory().getCategory(),
+	    	        Collectors.mapping(item -> new FoodItemDto(
+	    	            item.getName(),
+	    	            item.getDescription(),
+	    	            item.getPrice(),
+	    	            item.getRating(),
+	    	            item.getImageUrl()
+	    	        ), Collectors.toList())
+	    	    ));
+
+	    List<CategoryMenuDto> menu = grouped.entrySet().stream()
+	        .map(entry -> new CategoryMenuDto(entry.getKey(), entry.getValue()))
+	        .collect(Collectors.toList());
+	    try {
+	        String jsonMenu = objectMapper.writeValueAsString(menu);
+	        stringRedisTemplate.opsForValue().set(cacheKey, jsonMenu, Duration.ofMinutes(15));
+	    } catch (JsonProcessingException e) {
+	        throw new RuntimeException("Failed to serialize menu JSON", e);
+	    }
+
+	    return menu;
+	}
+
 
 }

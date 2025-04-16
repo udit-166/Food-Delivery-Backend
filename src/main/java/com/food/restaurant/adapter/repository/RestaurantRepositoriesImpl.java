@@ -1,6 +1,8 @@
 package com.food.restaurant.adapter.repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,6 +28,11 @@ public class RestaurantRepositoriesImpl implements RestaurantRepositories{
 	@Override
 	public List<Restaurant> getAllRestaurant() {
 		return restaurantRepository.findAll();
+	}
+
+	@Override
+	public Optional<Restaurant> findById(UUID restaunrant_id) {
+		return restaurantRepository.findById(restaunrant_id);
 	}
 
 }

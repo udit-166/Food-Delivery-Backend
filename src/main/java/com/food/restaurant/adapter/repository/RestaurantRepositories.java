@@ -1,6 +1,8 @@
 package com.food.restaurant.adapter.repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import com.food.restaurant.core.entity.Restaurant;
 
@@ -11,4 +13,6 @@ public interface RestaurantRepositories {
 	Restaurant save(Restaurant newRestaurant);
 	
 	List<Restaurant> getAllRestaurant();
+	
+	Optional<Restaurant> findById(UUID restaunrant_id);
 }

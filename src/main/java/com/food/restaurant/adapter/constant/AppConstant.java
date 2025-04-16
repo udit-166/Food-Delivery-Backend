@@ -7,4 +7,6 @@ public class AppConstant {
 	public static final String FOOD_ITEM_ENTITY = "food_item";
 	
 	public static final String CATEGORIES_ENTITY = "categories";
+	
+	public static final String MENU_CACHE_PREFIX = "resturant:";
 }

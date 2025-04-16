@@ -46,6 +46,8 @@ public class FoodItem {
 	
 	private String imageUrl;
 	
+	private Boolean is_active;
+	
 	@ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;

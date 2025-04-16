@@ -15,5 +15,9 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, UUID>{
 	List<FoodItem> findByCategory(Categories categories);
 
 	List<FoodItem> findByNameContainingIgnoreCase(String query);
+	
+	List<FoodItem> findAllByRestaurant_Id(UUID restaurantId);
+	
+	List<FoodItem> findAllByCategory_Id(UUID categoryId);
 
 }

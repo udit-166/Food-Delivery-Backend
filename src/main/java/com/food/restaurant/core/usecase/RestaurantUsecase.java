@@ -5,12 +5,13 @@ import java.util.UUID;
 
 import com.food.restaurant.adapter.model.AddFoodItemDto;
 import com.food.restaurant.adapter.model.AddFoodItemResponse;
+import com.food.restaurant.adapter.model.CategoryMenuDto;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.entity.Restaurant;
 
 public interface RestaurantUsecase {
 
-	public AddFoodItemResponse addFoodItems(AddFoodItemDto foodItem); 
+	public AddFoodItemResponse addFoodItems(FoodItem foodItem); 
 	
 	public List<Restaurant> getAllRestaurant();
 	
@@ -19,4 +20,6 @@ public interface RestaurantUsecase {
 	public Restaurant updateRestaurant (Restaurant restaurant);
 	
 	public void deleteRestaurant(String restaurant_name);
+	
+	public List<CategoryMenuDto> getMenuOfRestaurant(UUID restaurant_id);
 }
