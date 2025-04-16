@@ -1,6 +1,6 @@
 # 🍽️ Restaurant Service - Food Delivery App
 
-This microservice is responsible for managing restaurant data and food items in a scalable food delivery system. It interacts with other services such as `auth-service` and `user-service`.
+This microservice is responsible for managing restaurant data and food items in a scalable food delivery system.
 
 ---
 
