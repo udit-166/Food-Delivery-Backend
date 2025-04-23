@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.order.track.adapter.constant.AppConstant;
+import com.order.track.adapter.model.CountOrderResponse;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.OrderStatus;
+import com.order.track.adapter.model.OrderSummaryDTO;
 import com.order.track.adapter.service.OrderService;
 
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping(AppConstant.ORDER_CONTROLLER)
 public class OrderController {
 	
 	@Autowired
@@ -102,6 +104,34 @@ public class OrderController {
 			return new ResponseEntity<>(orderService.trackOrder(order_id), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>("The trackOrder service is not running and has some error occur!!", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping(AppConstant.ORDER_SUMMARY)
+	ResponseEntity<OrderSummaryDTO> orderSummary(@RequestParam OrderDTO order){
+		try {
+			return new ResponseEntity<>(orderService.orderSummary(order), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping(AppConstant.GET_COUNT_OF_ORDER_BY_CUSTOMER_ID)
+	ResponseEntity<CountOrderResponse> countOrderByCustomerId(@PathVariable UUID customer_id){
+		try {
+			return new ResponseEntity<>(orderService.countOrderByCustomerId(customer_id),HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@GetMapping(AppConstant.GET_COUNT_OF_ORDER_BY_RESTAURANT_ID)
+	ResponseEntity<CountOrderResponse> countOrderByRestaurantId(@PathVariable UUID restaurant_id){
+		try {
+			return new ResponseEntity<>(orderService.countOrderByRestaurantId(restaurant_id),HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

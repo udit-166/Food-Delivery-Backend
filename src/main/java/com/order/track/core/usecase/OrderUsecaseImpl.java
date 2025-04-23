@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.order.track.adapter.model.OrderStatus;
+import com.order.track.adapter.model.OrderSummaryDTO;
 import com.order.track.adapter.respository.OrderRepository;
 import com.order.track.core.entity.Order;
 import com.order.track.core.entity.OrderItem;
@@ -16,7 +19,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class OrderUsecaseImpl implements OrderUsecase{
 
-	
+	@Autowired
 	private OrderRepository orderRepository;
 	
 	@Override
@@ -106,6 +109,61 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		Order order = orderRepository.findById(order_id);
 		
 		return order.getStatus().toString();
+	}
+
+	@Override
+	public OrderSummaryDTO orderSummary(Order order) {
+		order.setStatus(OrderStatus.PENDING);
+		
+		BigDecimal total = BigDecimal.ZERO;
+		
+		List<OrderItem> processedItems = new ArrayList<>();
+		
+		for(OrderItem item : order.getItems()) {
+			item.setOrder(order);
+			BigDecimal price = item.getPrice() != null ? item.getPrice() : BigDecimal.valueOf(100); // mock price
+            BigDecimal itemTotal = price.multiply(BigDecimal.valueOf(item.getQuantity()));
+            
+            
+            
+            item.setPrice(itemTotal);
+            
+            total = total.add(itemTotal);
+            
+            
+            processedItems.add(item);
+		}
+		BigDecimal deliveryCharge = BigDecimal.TEN;
+		
+		total = total.add(deliveryCharge);
+		
+		order.setItems(processedItems);
+		order.setTotalPrice(total);
+		
+		OrderSummaryDTO summary = new OrderSummaryDTO();
+		
+		summary.setId(order.getId());
+		summary.setCustomerId(order.getCustomerId());
+		summary.setDelivery_charge(deliveryCharge);
+		summary.setIsActive(order.getIsActive());
+		summary.setItems(processedItems);
+		summary.setRestaurantId(order.getRestaurantId());
+		summary.setStatus(order.getStatus());
+		summary.setTotalPrice(total);
+		
+		return summary;
+	}
+
+	@Override
+	public Integer countOrderByCustomerId(UUID customer_id) {
+		
+		return orderRepository.countByCustomerId(customer_id);
+	}
+
+	@Override
+	public Integer countOrderByRestaurantId(UUID restaurant_id) {
+		
+		return orderRepository.countByRestaurantId(restaurant_id);
 	}
 
 }

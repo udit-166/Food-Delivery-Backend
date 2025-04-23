@@ -1,13 +1,13 @@
 package com.order.track.adapter.serviceImpl;
 
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.order.track.adapter.mapper.OrderMapper;
+import com.order.track.adapter.model.CountOrderResponse;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.OrderStatus;
+import com.order.track.adapter.model.OrderSummaryDTO;
 import com.order.track.adapter.service.OrderService;
 import com.order.track.core.entity.Order;
 import com.order.track.core.usecase.OrderUsecase;
@@ -70,4 +70,34 @@ public class OrderServiceImpl implements OrderService{
 		return orderUsecase.trackOrder(order_id);
 	}
 
+	@Override
+	public OrderSummaryDTO orderSummary(OrderDTO order) {
+		
+		Order convertedOrder = orderMapper.dtoToEntity(order);
+		
+		return orderUsecase.orderSummary(convertedOrder);
+	}
+
+	@Override
+	public CountOrderResponse countOrderByCustomerId(UUID customer_id) {
+		
+		Integer orderCount =  orderUsecase.countOrderByCustomerId(customer_id);
+		
+		CountOrderResponse count = new CountOrderResponse();
+		count.setCount(orderCount);
+		count.setMessage("The count of the customer with id "+customer_id);
+		return count;
+	}
+
+	@Override
+	public CountOrderResponse countOrderByRestaurantId(UUID restaurant_id) {
+		
+		Integer orderCount = orderUsecase.countOrderByRestaurantId(restaurant_id);
+		CountOrderResponse count = new CountOrderResponse();
+		count.setCount(orderCount);
+		count.setMessage("The count of the restaurant with id "+restaurant_id);
+		return count;
+	}
+
+	
 }

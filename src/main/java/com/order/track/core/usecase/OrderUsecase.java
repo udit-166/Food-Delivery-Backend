@@ -3,10 +3,13 @@ package com.order.track.core.usecase;
 import java.util.UUID;
 
 import com.order.track.adapter.model.OrderStatus;
+import com.order.track.adapter.model.OrderSummaryDTO;
 import com.order.track.core.entity.Order;
 
 public interface OrderUsecase {
 
+	public OrderSummaryDTO orderSummary(Order order);
+	
 	public Order placeOrder(Order order);
 	
 	public Order getOrderById(UUID order_id);
@@ -22,4 +25,8 @@ public interface OrderUsecase {
 	public Boolean requestCancellationOfOrder(UUID customer_id, UUID order_id);
 	
 	public String trackOrder(UUID order_id);
+	
+	public Integer countOrderByCustomerId(UUID customer_id);
+	
+	public Integer countOrderByRestaurantId(UUID restaurant_id);
 }

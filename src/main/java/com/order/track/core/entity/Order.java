@@ -1,16 +1,13 @@
 package com.order.track.core.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import com.order.track.adapter.constant.AppConstant;
 import com.order.track.adapter.model.OrderStatus;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,11 +44,15 @@ public class Order {
 	private Boolean isActive;
 	
 	@CreationTimestamp
-	private LocalTime create_at;
+	private LocalDateTime create_at;
 	
 	@UpdateTimestamp
-	private LocalTime updated_at;
+	private LocalDateTime updated_at;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderItem> items;
+	
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Payment> payments;
+	
 }
