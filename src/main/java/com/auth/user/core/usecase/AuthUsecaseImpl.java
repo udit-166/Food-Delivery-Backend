@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.auth.user.adapter.mapper.UserMapper;
@@ -31,6 +32,9 @@ public class AuthUsecaseImpl implements AuthUsecase{
 	private JwtAuthentication jwtAuthentication;
 	
 	private StringRedisTemplate redisTemplate;
+	
+	@Autowired
+	private KafkaTemplate<String, String> kafkaTemplate;
 	
 	
 	private AuthUsecaseImpl(UserRepository userRepository, JwtAuthentication jwtAuthentication,StringRedisTemplate redisTemplate) {
@@ -93,47 +97,7 @@ public class AuthUsecaseImpl implements AuthUsecase{
 	@Override
 	public void sendOtp(String phone_number) {
 		try {
-			//important step
-		String otp = this.generateOtp(phone_number);
-		String language = "english";
-		
-		String route = "otp";
-		
-		String myURL = "https://www.fast2sms.com/dev/bulkV2?authorization="+AppConstants.TWILIO_API_KEY+"&variables_values="+otp+"&route="+route+"&numbers="+phone_number;
-		//sending get request using java
-		
-		System.out.println(myURL);
-		
-		URL url = new URL(myURL);
-		
-		HttpURLConnection con = (HttpURLConnection)url.openConnection();
-		
-		con.setRequestMethod("GET");
-		
-		con.setRequestProperty("User-Agent","Mozilla/5.0");
-		con.setRequestProperty("cache-control", "no-cache");
-		
-		System.out.println("waiting..................");
-		
-		int code = con.getResponseCode();
-		
-		System.out.println("Response Code "+code);
-		
-		StringBuffer response = new StringBuffer();
-		
-		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		
-		while(true) {
-			String line = br.readLine();
-			if(line==null) {
-				break;
-			}
-			response.append(line);
-		}
-		System.out.println(response);
-		
-		
-		
+			kafkaTemplate.send("send_otp", phone_number);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

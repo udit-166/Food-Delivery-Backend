@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.auth.user.adapter.service.UserService;
+import com.auth.user.common.constant.AppConstants;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.model.AddressResponse;
 import com.auth.user.core.model.DeactivateUserResponse;
@@ -27,7 +28,7 @@ import com.auth.user.core.model.UserDetailsResponse;
 import com.auth.user.core.model.UserDto;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping(AppConstants.USER_CONTROLLER)
 public class UserController {
 	
 	private UserService userService;
@@ -36,7 +37,7 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@GetMapping("/getProfileDetails/{phone_number}")
+	@GetMapping(AppConstants.GET_PROFILE_BY_PHONE_NUMBER)
 	public ResponseEntity<UserDetailsResponse> getProfileByPhoneNumber(@PathVariable String phone_number){
 		try {
 			UserDetailsResponse response  = new UserDetailsResponse();
@@ -57,7 +58,7 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/getProfileDetails/{email}")
+	@GetMapping(AppConstants.GET_PROFILE_BY_EMAIL)
 	public ResponseEntity<UserDetailsResponse> getProfileByEmail(@PathVariable String email){
 		try {
 			UserDetailsResponse response  = new UserDetailsResponse();
@@ -78,7 +79,7 @@ public class UserController {
 		}
 	}
 	
-	@PutMapping("/updateProfile")
+	@PutMapping(AppConstants.UPDATE_PROFILE)
 	public ResponseEntity<UserDetailsResponse> updateProfile(@RequestParam UserDto user){
 		try {
 		UserDto updatedUser = userService.updateUserProfile(user);
@@ -102,7 +103,7 @@ public class UserController {
 		
 	}
 	
-	@GetMapping("/getRoleOfUser/{userId}")
+	@GetMapping(AppConstants.GET_ROLE)
 	public ResponseEntity<RoleResponse> getRole (@RequestParam UUID userId){
 		try {
 			RoleResponse response = new RoleResponse();
@@ -126,7 +127,7 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/getCurrentAddress/{userId}")
+	@GetMapping(AppConstants.GET_CURRENT_ADDRESS)
 	public ResponseEntity<AddressResponse> getCurrentAddress(@RequestParam Location location, @PathVariable UUID userId){
 		try {
 			AddressResponse res = new AddressResponse();
@@ -155,7 +156,7 @@ public class UserController {
 		}
 	}
 	
-	@GetMapping("/getListOfAddress/{userId}")
+	@GetMapping(AppConstants.GET_ALL_ADDRESS_OF_USER)
 	public ResponseEntity<AddressResponse> getAllAddressOfUser(@RequestParam UUID userID){
 		try {
 			AddressResponse response = new AddressResponse();
@@ -180,7 +181,7 @@ public class UserController {
 		}
 	}
 	
-	@PostMapping("/saveAddress")
+	@PostMapping(AppConstants.SAVE_ADDRESS)
 	public ResponseEntity<AddressResponse> saveAddress(@RequestParam UUID userId , @RequestParam Address address){
 		try {
 			AddressResponse response = new AddressResponse();
@@ -205,7 +206,7 @@ public class UserController {
 		}
 	}
 	
-	@PutMapping("/updateAddress")
+	@PutMapping(AppConstants.UPDATE_ADDRESS)
 	public ResponseEntity<AddressResponse> updateAddress(@RequestParam Address address){
 		try {
 			AddressResponse response = new AddressResponse();
@@ -230,7 +231,7 @@ public class UserController {
 		}
 	}
 	
-	@PutMapping("/updateUserMetaData")
+	@PutMapping(AppConstants.UPDATE_USER_META_DATA)
 	public ResponseEntity<UpdatedMetaDataResponse> updateUserMetaData(@RequestParam UpdateMetaDataRequest dataRequest){
 		try {
 			UserDto user = userService.updateUserMetaDataInfo(dataRequest);
@@ -260,7 +261,7 @@ public class UserController {
 		}
 	}
 	
-	@DeleteMapping("/deleteAccount")
+	@DeleteMapping(AppConstants.DELETE_ACCOUNT)
 	public ResponseEntity<DeactivateUserResponse> deActivateUser(@RequestParam UUID userId){
 		try {
 			DeactivateUserResponse response = new DeactivateUserResponse();

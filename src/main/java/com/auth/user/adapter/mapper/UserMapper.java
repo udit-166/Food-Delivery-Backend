@@ -10,5 +10,5 @@ import com.auth.user.core.model.UserDto;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface UserMapper {
 	 UserDto entityToDto(User user);
-	 User dtoToEntityUser(UserDto userDto);
+	 User dtoToEntity(UserDto userDto);
 }

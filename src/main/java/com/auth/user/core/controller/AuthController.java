@@ -3,11 +3,15 @@ package com.auth.user.core.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.auth.user.adapter.service.AuthService;
+import com.auth.user.common.constant.AppConstants;
 import com.auth.user.core.entity.User;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.LoginResponse;
@@ -18,12 +22,13 @@ import com.auth.user.core.utils.JwtAuthentication;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(AppConstants.AUTH_CONTROLLER)
 public class AuthController {
 	
 	private final JwtAuthentication jwtAuthentication ;
 	
 	private final GoogleTokenValidator googleTokenValidator;
+	
 	
 	@Autowired
 	private AuthService authService;
@@ -34,7 +39,7 @@ public class AuthController {
 		this.googleTokenValidator = googleTokenValidator;
 	}
 	
-	@PostMapping("/login")
+	@PostMapping(AppConstants.LOGIN)
 	public ResponseEntity<LoginResponse> login(@RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String oauthToken, @RequestParam Location location){
 
 		try {
@@ -106,6 +111,7 @@ public class AuthController {
 		}
 	}
 	
+	@PostMapping(AppConstants.REGISTER_USER)
 	public ResponseEntity<LoginResponse> registerUser(@RequestParam User user){
 		try {
 			LoginResponse response  =  new LoginResponse();
@@ -134,6 +140,7 @@ public class AuthController {
 		}
 	}
 	
+	@PostMapping(AppConstants.REFRESH_TOKEN)
 	public ResponseEntity<String> refreshToken(@RequestParam String phone_number){
 		try {
 			String token = authService.refreshJwtToken(phone_number);
@@ -143,7 +150,8 @@ public class AuthController {
 		}
 	}
 	
-	public ResponseEntity<String> sendOtp(@RequestParam String phone_number){
+	@GetMapping(AppConstants.SEND_OTP)
+	public ResponseEntity<String> sendOtp(@PathVariable String phone_number){
 		try {
 			authService.sendOtp(phone_number);
 			return new ResponseEntity<>("The otp send successfully!!", HttpStatus.OK);
@@ -152,6 +160,7 @@ public class AuthController {
 		}
 	}
 	
+	@PostMapping(AppConstants.VERIFY_OTP)
 	public ResponseEntity<String> verifyOtp(@RequestParam String phone_number, @RequestParam String otp){
 		try {
 			if(phone_number == null || otp == null) {

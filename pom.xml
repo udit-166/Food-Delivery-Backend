@@ -64,6 +64,10 @@
 	<groupId>org.apache.httpcomponents</groupId>
 	<artifactId>httpcore</artifactId>
 	</dependency>
+	<dependency>
+	    <groupId>org.springframework.kafka</groupId>
+	    <artifactId>spring-kafka</artifactId>
+	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
 	<dependency>
 	    <groupId>org.mapstruct</groupId>

@@ -20,5 +20,39 @@ public class AppConstants {
 	public static final String TWILIO_API_KEY = "EmVTwn5bucyZ7rQkp2aNC3IYLxeGSBXRhi6qzlDP8d1HjUf4AtxpQAvlgukrX1FBUSwqfaWiPmLs5heD";
 	
 	public static final String TWILIO_SEND_ID = "FSTSMS";
+	
+	public static final String USER_CONTROLLER = "/user";
+	
+	public static final String GET_PROFILE_BY_PHONE_NUMBER = "/getProfileDetails/{phone_number}";
+	
+	public static final String GET_PROFILE_BY_EMAIL = "/getProfileDetails/{email}";
+	
+	public static final String UPDATE_PROFILE = "/updateProfile";
+	
+	public static final String GET_ROLE = "/getRoleOfUser/{userId}";
+	
+	public static final String GET_CURRENT_ADDRESS = "/getCurrentAddress/{userId}";
+	
+	public static final String GET_ALL_ADDRESS_OF_USER = "/getListOfAddress/{userId}";
+	
+	public static final String SAVE_ADDRESS = "/saveAddress";
+	
+	public static final String UPDATE_ADDRESS = "/updateAddress";
+	
+	public static final String UPDATE_USER_META_DATA = "/updateUserMetaData";
+	
+	public static final String DELETE_ACCOUNT = "/deleteAccount";
+	
+	public static final String AUTH_CONTROLLER = "/auth";
+	
+	public static final String LOGIN = "/login";
+	
+	public static final String REGISTER_USER = "/registerUser";
+	
+	public static final String REFRESH_TOKEN = "/refreshToken";
+	
+	public static final String SEND_OTP = "/sendOtp/{phone_number}";
+	
+	public static final String VERIFY_OTP = "/verifyOtp";
 
 }
