@@ -12,3 +12,8 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: Tuktuk@123
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest 
