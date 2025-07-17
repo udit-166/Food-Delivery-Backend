@@ -13,6 +13,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import com.notification.send.adapter.constant.AppConstant;
 import com.notification.send.adapter.models.EmailNotificationDTO;
+import com.notification.send.adapter.models.FcmNotification;
+import com.notification.send.adapter.models.HandleOrderRequest;
 import com.notification.send.adapter.service.NotificationService;
 import com.notification.send.core.usecase.NotificationUsecase;
 
@@ -93,6 +95,106 @@ public class NotificationServiceImpl implements NotificationService{
 		
 		
 	}
+
+	@Override
+	@KafkaListener(topics = "send_notification", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public boolean sendNotification(FcmNotification notificationData) {
+		String to = notificationData.getTo();
+		String title = notificationData.getTitle();
+		String body = notificationData.getBody();
+		boolean result = notificationUsecase.sendNotification(to, title, body);
+		return result;
+	}
+
+	@Override
+	@KafkaListener(topics = "handle_order_placed", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public void handleOrderPlaced(HandleOrderRequest payload) {
+		try {
+			String title = "Order Placed";
+			String body = "Your Order with orderId "+ payload.getOrderId()+" is placed.";
+			notificationUsecase.sendNotification(payload.getFcmToken(), title, body);
+			notificationUsecase.sendEmail("Order Placed",body, payload.getEmail());
+			
+		} catch (Exception e) {
+			System.out.println("The error occur while sending the notification for order placed!!");
+		}
+	}
+
+	@Override
+	@KafkaListener(topics = "handle_order_dispatched", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public void handleOrderDispatched(HandleOrderRequest payload) {
+		try {
+			String title = "Order Dispatched";
+			String body = "Your Order with orderId "+ payload.getOrderId()+" is dispatched.";
+			notificationUsecase.sendNotification(payload.getFcmToken(), title, body);
+			
+		} catch (Exception e) {
+			System.out.println("The error occur while sending the notification for order dispatched!!");
+		}
+		
+	}
+
+	@Override
+	@KafkaListener(topics = "handle_order_assigned_to_delivery_person", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public void handleOrderAssignedToDeliveryPerson(HandleOrderRequest payload) {
+		try {
+			String title = "Delivery Person Is Here";
+			String body = "The delivery person is assigned for your order and will deliver in 10 minutes.";
+			notificationUsecase.sendNotification(payload.getFcmToken(), title, body);
+			
+		} catch (Exception e) {
+			System.out.println("The error occur while sending the notification for order assigned to delivery person.");
+		}
+		
+	}
+
+	@Override
+	@KafkaListener(topics = "handle_order_delivered", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public void handleOrderDilveredNotification(HandleOrderRequest payload) {
+		try {
+			String title = "Order Delivered";
+			String body = "Your order has been delivered to you. Please rate us and share your food taste and expirence with us/.";
+			notificationUsecase.sendNotification(payload.getFcmToken(), title, body);
+			
+		} catch (Exception e) {
+			System.out.println("The error occur while sending the notification for order delivered!!");
+		}
+		
+	}
+
+	@Override
+	@KafkaListener(topics = "handle_payment_failed", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public void handlePaymentFailedNotification(HandleOrderRequest payload) {
+		try {
+			String title = "Order Payment Failed!";
+			String body = "Your payment is failed. Your money is not debited. Please try again to confirmed the order.";
+			notificationUsecase.sendNotification(payload.getFcmToken(), title, body);
+			
+		} catch (Exception e) {
+			System.out.println("The error occur while sending the notification for order payment failed!!");
+		}
+		
+	}
+
+	@Override
+	@KafkaListener(topics = "handle_payment_success", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
+	public void handlePaymentSuccessNotification(HandleOrderRequest payload) {
+		try {
+			String title = "Order Payment Successfully Done!";
+			String body = "Your payment is successfully done.";
+			notificationUsecase.sendNotification(payload.getFcmToken(), title, body);
+			
+		} catch (Exception e) {
+			System.out.println("The error occur while sending the notification for order payment done successfully!!");
+		}
+		
+	}
+
+//	@Override
+//	public void handlePaymentPendingNotification(HandleOrderRequest payload) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 	
 
 }

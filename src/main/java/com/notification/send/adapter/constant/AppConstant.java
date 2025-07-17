@@ -20,4 +20,9 @@ public class AppConstant {
 	public static final String NOTIFICATION_CONTROLLER = "/api/notification";
 	
 	public static final String SEND_EMAIL_NOTIFICATION = "/sendNotification";
+	
+	public static final String FIREBASE_API_KEY = "AIzaSyCQlHRqHk69iam0SaRviwse3AyAUAOI2KU";
+	
+	public static final String FIREBASE_NOTIFICATION_API = "https://fcm.googleapis.com/fcm/send";
+	
 }

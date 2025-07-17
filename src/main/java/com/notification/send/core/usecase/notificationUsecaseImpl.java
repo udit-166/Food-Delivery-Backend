@@ -1,5 +1,7 @@
 package com.notification.send.core.usecase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -10,7 +12,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.notification.send.adapter.constant.AppConstant;
 import com.notification.send.adapter.repositories.EmailNotificationRepositories;
@@ -90,6 +97,37 @@ public class notificationUsecaseImpl implements NotificationUsecase{
 			
 			System.out.println(e);
 		}
+	}
+
+	@Override
+	public boolean sendNotification(String token, String title, String body) {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("Authorization", "key="+ AppConstant.FIREBASE_API_KEY);
+			
+			Map<String, Object> notification = Map.of("title", title, "body", body);
+			Map<String, Object> bodyMap = new HashMap<>();
+			
+			bodyMap.put("to", token);
+			bodyMap.put("notification", notification);
+			bodyMap.put("priority", "high");
+			
+			HttpEntity<Map<String, Object>> entity = new HttpEntity<>(bodyMap, headers);
+			
+			RestTemplate restTemplate = new RestTemplate();
+			
+			ResponseEntity<String> response = restTemplate.postForEntity(AppConstant.FIREBASE_NOTIFICATION_API, entity, String.class);
+			
+			System.out.println("Notification sent: "+response.getBody());
+			
+			return true;
+			
+		}
+		catch (Exception e) {
+			return false;
+		}
+		
 	}
 
 }
