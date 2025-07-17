@@ -1,11 +1,12 @@
 package com.order.track.adapter.model;
 
 public enum OrderStatus {
-	
 	PENDING,
-	CONFIRMED,
+	PLACED,
+	DISPATCHED,
+	ASSIGNED_TO_DELIVERY,
+	DELIVERED,
 	CANCELLED,
 	CANCELATION_REQUEST_PENDING,
 	OUT_FOR_DELIVERY,
-	DELIVERED
 }

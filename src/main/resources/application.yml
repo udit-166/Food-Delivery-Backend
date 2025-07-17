@@ -12,3 +12,15 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: Tuktuk@123
+  application:
+    name: ORDER-SERVICE
+
+eureka:
+  instance:
+    prefer-ip-address: true
+
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:7084/eureka

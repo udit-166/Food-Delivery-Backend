@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.UUID;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import com.order.track.adapter.constant.AppConstant;
 import com.order.track.adapter.mapper.PaymentMapper;
+import com.order.track.adapter.model.FcmNotification;
+import com.order.track.adapter.model.HandleNotificationRequest;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.PaymentDTO;
 import com.order.track.adapter.model.PaymentStatus;
@@ -41,6 +44,9 @@ public class PaymentUsecaseImpl implements PaymentUsecase{
 	private VerifySignature verifySignature;
 
 	private PaymentMapper paymentMapper;
+	
+	@Autowired
+	private KafkaTemplate<String, HandleNotificationRequest> kafkaTemplate;
 
 
 	@Override
@@ -103,13 +109,26 @@ public class PaymentUsecaseImpl implements PaymentUsecase{
 			history.setOrderId(null);
 			
 			orderHistoryRepository.save(history);
+
+			HandleNotificationRequest succes_request = new HandleNotificationRequest();
 			
+			succes_request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+			succes_request.setFcmToken("");
+			succes_request.setPhone("8887943623");
+			
+			kafkaTemplate.send("handle_payment_success", succes_request);
 			return result1;
 		}
 		else {
 			payment.setStatus(PaymentStatus.FAILED);
 			Payment result = paymentRepository.save(payment);
 			PaymentDTO result1 = paymentMapper.entityToDto(result);
+			HandleNotificationRequest failed_request = new HandleNotificationRequest();
+			
+			failed_request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+			failed_request.setFcmToken("");
+			failed_request.setPhone("8887943623");
+			kafkaTemplate.send("handle_payment_failed", failed_request);
 			
 			return result1;
 		}

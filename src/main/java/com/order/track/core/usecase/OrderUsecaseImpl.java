@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.order.track.adapter.model.HandleNotificationRequest;
 import com.order.track.adapter.model.OrderStatus;
 import com.order.track.adapter.model.OrderSummaryDTO;
 import com.order.track.adapter.respository.OrderRepository;
@@ -22,10 +24,13 @@ public class OrderUsecaseImpl implements OrderUsecase{
 	@Autowired
 	private OrderRepository orderRepository;
 	
+	@Autowired
+	private KafkaTemplate<String, HandleNotificationRequest> kafkaTemplate;
+	
 	@Override
 	@Transactional
 	public Order placeOrder(Order order) {
-		order.setStatus(OrderStatus.CONFIRMED);
+		order.setStatus(OrderStatus.PLACED);
 		
 		BigDecimal total = BigDecimal.ZERO;
 		
@@ -45,7 +50,19 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		
 		order.setItems(processedItems);
 		order.setTotalPrice(total);
-		return orderRepository.save(order);
+		Order result = orderRepository.save(order);
+		
+		HandleNotificationRequest request = new HandleNotificationRequest();
+		
+		request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+		request.setOrderId(result.getId().toString());
+		request.setFcmToken("");
+		request.setPhone("8887943623");
+		
+		kafkaTemplate.send("handle_order_placed", request);
+		
+		return result;
+		
 	}
 
 	@Override
@@ -74,6 +91,36 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		
 		orderToUpdate.setStatus(status);
 		
+		HandleNotificationRequest request = new HandleNotificationRequest();
+		
+		request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+		request.setOrderId(orderToUpdate.getId().toString());
+		request.setFcmToken("");
+		request.setPhone("8887943623");
+		
+		 String topic = "";
+		    switch (status) {
+		        case PLACED:
+		            topic = "handle_order_placed";
+		            break;
+		        case DISPATCHED:
+		            topic = "handle_order_dispatched";
+		            break;
+		        case ASSIGNED_TO_DELIVERY:
+		            topic = "handle_order_assigned_to_delivery_person";
+		            break;
+		        case DELIVERED:
+		            topic = "handle_order_delivered";
+		            break;
+		        default:
+		            System.out.println("Unknown status: No notification sent.");
+		    }
+
+		    // Send notification to Kafka topic (if topic is not empty)
+		    if (!topic.isEmpty()) {
+		        kafkaTemplate.send(topic, request);
+		    }
+		
 		return orderRepository.save(orderToUpdate);
 	}
 
@@ -87,6 +134,15 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		}
 		orderToCancell.setStatus(OrderStatus.CANCELLED); 
 		orderRepository.save(orderToCancell);
+		
+
+		HandleNotificationRequest request = new HandleNotificationRequest();
+		
+		request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+		request.setOrderId(orderToCancell.getId().toString());
+		request.setFcmToken("");
+		request.setPhone("8887943623");
+		kafkaTemplate.send("handle_order_cancel", request);
 		return true;
 	}
 
@@ -100,6 +156,15 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		}
 		orderRequestToOrder.setStatus(OrderStatus.CANCELATION_REQUEST_PENDING);
 		orderRepository.save(orderRequestToOrder);
+
+		HandleNotificationRequest request = new HandleNotificationRequest();
+		
+		request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+		request.setOrderId(orderRequestToOrder.getId().toString());
+		request.setFcmToken("");
+		request.setPhone("8887943623");
+		
+		kafkaTemplate.send("handle_request_order_cancellation", request);
 		return true;
 	}
 
@@ -113,7 +178,7 @@ public class OrderUsecaseImpl implements OrderUsecase{
 
 	@Override
 	public OrderSummaryDTO orderSummary(Order order) {
-		order.setStatus(OrderStatus.PENDING);
+		order.setStatus(OrderStatus.PLACED);
 		
 		BigDecimal total = BigDecimal.ZERO;
 		
