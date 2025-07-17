@@ -9,7 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: Tuktuk@123
- 
+
 
   data:
     redis:
@@ -17,7 +17,8 @@ spring:
       port: 18951
       username: default
       password: mjM8DVtsyuEWbh67nQGB2AuixBnsjhLx
-
+  application:
+    name: AUTH-SERVICE
 server:
   port: 8090
 #  servlet:
