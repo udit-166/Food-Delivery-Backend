@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -22,6 +23,7 @@ import com.food.restaurant.adapter.model.AddFoodItemDto;
 import com.food.restaurant.adapter.model.AddFoodItemResponse;
 import com.food.restaurant.adapter.model.CategoryMenuDto;
 import com.food.restaurant.adapter.model.CategoryMenuResponse;
+import com.food.restaurant.adapter.model.FcmNotification;
 import com.food.restaurant.adapter.model.FoodItemDto;
 import com.food.restaurant.adapter.repository.CategoryRepository;
 import com.food.restaurant.adapter.repository.FoodItemRepositories;
@@ -44,6 +46,9 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private KafkaTemplate<String, FcmNotification> kafkaTemplate;
 	
 	public RestaurantUsecaseimpl() {
 		
@@ -89,6 +94,13 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		// Prepare response
 		AddFoodItemResponse response = new AddFoodItemResponse();
 		response.setMessage("Food item added successfully!");
+		FcmNotification notification = new FcmNotification();
+		
+		notification.setTo("");
+		notification.setTitle("");
+		notification.setBody(null);
+		
+		kafkaTemplate.send("send-notification", notification);
 		return response;
 		}
 
@@ -119,6 +131,14 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		updateRestaurant.setOpening_time(restaurant.getOpening_time());
 		updateRestaurant.setRestaurant_email(restaurant.getRestaurant_email());
 		updateRestaurant.setTotal_rating(restaurant.getTotal_rating());
+		
+		FcmNotification notification = new FcmNotification();
+		
+		notification.setTo("");
+		notification.setTitle("");
+		notification.setBody(null);
+		
+		kafkaTemplate.send("send-notification", notification);
 		
 		return restaurantRepositories.save(updateRestaurant);
 	}

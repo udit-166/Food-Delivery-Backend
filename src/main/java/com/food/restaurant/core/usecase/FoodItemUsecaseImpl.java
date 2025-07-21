@@ -6,10 +6,12 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.food.restaurant.adapter.model.FcmNotification;
 import com.food.restaurant.adapter.repository.FoodItemRepositories;
 import com.food.restaurant.core.entity.FoodItem;
 
@@ -22,6 +24,9 @@ public class FoodItemUsecaseImpl implements FoodItemUsecase{
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private KafkaTemplate<String, FcmNotification> kafkaTemplate;
 
 	@Override
 	public List<FoodItem> getAllFoodItems() {
@@ -109,6 +114,13 @@ public class FoodItemUsecaseImpl implements FoodItemUsecase{
 		toUpdate.setRating(foodItem.getRating());
 		
 		foodItemRepositories.save(toUpdate);
+		
+		FcmNotification notification = new FcmNotification();
+		notification.setTo("");
+		notification.setTitle("");
+		notification.setBody(null);
+		
+		kafkaTemplate.send("send-notification", notification);
 		return toUpdate;
 	}
 

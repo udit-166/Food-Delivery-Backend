@@ -18,3 +18,16 @@ spring:
       port: 18951
       username: default
       password: mjM8DVtsyuEWbh67nQGB2AuixBnsjhLx
+
+  application:
+    name: RESTAURANT-SERVICE
+
+eureka:
+  instance:
+    prefer-ip-address: true
+
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:7084/eureka
