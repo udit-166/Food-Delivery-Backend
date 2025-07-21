@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+src/main/resources/notification-service-42f13-firebase-adminsdk-fbsvc-f88e5b0c7a.json
