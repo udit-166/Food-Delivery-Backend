@@ -1,5 +1,7 @@
 package com.auth.user.core.model;
 
+import com.auth.user.core.entity.User;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginResponse {
 	
-	private UserDto user;
+	private User user;
 	
 	private String message;
 	

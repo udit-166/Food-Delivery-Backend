@@ -55,7 +55,7 @@ public class AuthController {
 				String email = payload.getEmail();
 				String googleId = payload.getSubject();
 				
-				UserDto user = authService.findByGoogleId(googleId);
+				User user = authService.findByGoogleId(googleId);
 				
 				if(user == null) {
 					User userToRegister = new User();
@@ -66,7 +66,7 @@ public class AuthController {
 					userToRegister.setLocation(location);
 					userToRegister.setVerified(true);
 					
-					UserDto registerUser = authService.register(userToRegister);
+					User registerUser = authService.register(userToRegister);
 					String jwtToken = jwtAuthentication.generateToken(registerUser.getPhone());
 					
 					response.setUser(registerUser);
@@ -86,7 +86,7 @@ public class AuthController {
 			}
 		
 		if(phoneNumber != null) {
-			UserDto user = authService.login(phoneNumber);
+			User user = authService.login(phoneNumber);
 			
 			if(user!=null) {
 				String token = jwtAuthentication.generateToken(phoneNumber);
@@ -116,7 +116,7 @@ public class AuthController {
 	public ResponseEntity<LoginResponse> registerUser(@RequestBody User user){
 		try {
 			LoginResponse response  =  new LoginResponse();
-			UserDto existUser = authService.login(user.getPhone());
+			User existUser = authService.login(user.getPhone());
 			
 			if(existUser != null) {
 				response.setUser(null);
@@ -124,7 +124,7 @@ public class AuthController {
 				response.setJwt(null);
 				return new ResponseEntity<>(response,HttpStatus.CONFLICT);
 			}
-			UserDto registerUser = authService.register(user);
+			User registerUser = authService.register(user);
 			String token = jwtAuthentication.generateToken(registerUser.getPhone());
 			
 			response.setUser(registerUser);

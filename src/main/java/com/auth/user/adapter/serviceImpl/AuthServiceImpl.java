@@ -14,17 +14,17 @@ public class AuthServiceImpl implements AuthService{
 	private AuthUsecase authUsecase;
 	
 	@Override
-	public UserDto login(String phoneNumber) {
+	public User login(String phoneNumber) {
 		return authUsecase.login(phoneNumber);
 	}
 
 	@Override
-	public UserDto register(User user) {
+	public User register(User user) {
 		return authUsecase.register(user);
 	}
 
 	@Override
-	public UserDto findByGoogleId(String googleId) {
+	public User findByGoogleId(String googleId) {
 		return authUsecase.findByGoogleId(googleId);
 	}
 

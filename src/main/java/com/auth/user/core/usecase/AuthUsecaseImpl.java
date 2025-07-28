@@ -21,12 +21,15 @@ import com.auth.user.core.model.UserDetailsResponse;
 import com.auth.user.core.model.UserDto;
 import com.auth.user.core.utils.JwtAuthentication;
 
+import lombok.RequiredArgsConstructor;
+
 
 @Service
+@RequiredArgsConstructor
 public class AuthUsecaseImpl implements AuthUsecase{
 	
+	@Autowired
 	private UserRepository userRepository;
-	
 	private UserMapper userMapper;
 	
 	private JwtAuthentication jwtAuthentication;
@@ -36,27 +39,24 @@ public class AuthUsecaseImpl implements AuthUsecase{
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
 	
-	
-	private AuthUsecaseImpl(UserRepository userRepository, JwtAuthentication jwtAuthentication,StringRedisTemplate redisTemplate) {
-		this.userRepository = userRepository;
-		this.jwtAuthentication = jwtAuthentication;
-		this.redisTemplate = redisTemplate;
-	}
 
 	@Override
-	public UserDto login(String phoneNumber) {
+	public User login(String phoneNumber) {
 		User user = userRepository.findUserByPhoneNumber(phoneNumber);
+		if(user == null) {
+			return null;
+		}
+		System.out.printf("The saved user is::::::", user);
+		return user;
 		
-		UserDto loginResponse = userMapper.entityToDto(user);
-		
-		return loginResponse;
 	}
 
 	@Override
-	public UserDto register(User user) {
+	public User register(User user) {
 		 
 		User payload = new User();
 		
+		payload.setUsername("user");
 		payload.setEmail(user.getEmail());
 		payload.setPhone(user.getPhone());
 		payload.setLocation(user.getLocation());
@@ -65,20 +65,19 @@ public class AuthUsecaseImpl implements AuthUsecase{
 		payload.setActive(true);
 		payload.setVerified(true);
 		
-		userRepository.save(payload);
+		User savedUser = userRepository.save(payload);
+		System.out.printf("The saved user is::::::", savedUser);
 		
-		UserDto registerUser = userMapper.entityToDto(payload);
-		
-		return registerUser;
+		 return savedUser;
 	}
 
 	@Override
-	public UserDto findByGoogleId(String googleId) {
+	public User findByGoogleId(String googleId) {
 		User userByGoogleId = userRepository.findByGoogleId(googleId);
 		
-		UserDto userByGoogleRegistration = userMapper.entityToDto(userByGoogleId);
+		//UserDto userByGoogleRegistration = userMapper.entityToDto(userByGoogleId);
 		
-		return userByGoogleRegistration;
+		return userByGoogleId;
 	}
 
 	@Override

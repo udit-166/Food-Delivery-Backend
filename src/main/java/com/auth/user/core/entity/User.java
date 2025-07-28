@@ -36,7 +36,7 @@ public class User {
 	@Column(nullable = false)
 	private UUID id;
 	
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String username;
 	
 	@Column(unique = true, nullable = true)
@@ -53,17 +53,17 @@ public class User {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Address> address;
-	
+
 	private String profileImageUrl;
-	
+
 	private boolean isVerified;
-	
+
 	private boolean isActive;
-	
+
 	private String fcmToken;
-	
+
 	private String device_id;
-	
+
 	private Double app_version;
 	
 	@Column(unique = true, nullable = true)
