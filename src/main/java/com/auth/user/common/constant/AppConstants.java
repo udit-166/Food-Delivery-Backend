@@ -54,5 +54,7 @@ public class AppConstants {
 	public static final String SEND_OTP = "/sendOtp/{phone_number}";
 	
 	public static final String VERIFY_OTP = "/verifyOtp";
+	
+	public static final String JWT_HEADER = "Authorization";
 
 }

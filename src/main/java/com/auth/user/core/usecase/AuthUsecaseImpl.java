@@ -1,11 +1,8 @@
 package com.auth.user.core.usecase;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.util.Random;
-import java.util.UUID;
+
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +10,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.auth.user.adapter.mapper.UserMapper;
 import com.auth.user.adapter.repository.UserRepository;
 import com.auth.user.common.constant.AppConstants;
 import com.auth.user.core.entity.User;
-import com.auth.user.core.model.UserDetailsResponse;
-import com.auth.user.core.model.UserDto;
+
 import com.auth.user.core.utils.JwtAuthentication;
 
 import lombok.RequiredArgsConstructor;
@@ -27,17 +22,14 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthUsecaseImpl implements AuthUsecase{
+
+	private final UserRepository userRepository;
 	
-	@Autowired
-	private UserRepository userRepository;
-	private UserMapper userMapper;
+	private final JwtAuthentication jwtAuthentication;
 	
-	private JwtAuthentication jwtAuthentication;
-	
-	private StringRedisTemplate redisTemplate;
-	
-	@Autowired
-	private KafkaTemplate<String, String> kafkaTemplate;
+	private final StringRedisTemplate redisTemplate;
+
+	private final KafkaTemplate<String, String> kafkaTemplate;
 	
 
 	@Override
@@ -46,7 +38,6 @@ public class AuthUsecaseImpl implements AuthUsecase{
 		if(user == null) {
 			return null;
 		}
-		System.out.printf("The saved user is::::::", user);
 		return user;
 		
 	}
