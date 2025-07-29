@@ -5,6 +5,15 @@ spring:
   application:
     name: API-GATEWAY
 
+  cloud:
+    gateway:
+      routes:
+      - id: AUTH_SERVICE
+        uri: lb://AUTH-SERVICE
+        predicates:
+        - Path= /auth/** # anything like registerUser
+
+
 eureka:
   instance:
     prefer-ip-address: true
