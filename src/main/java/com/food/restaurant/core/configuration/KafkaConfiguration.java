@@ -34,7 +34,8 @@ public class KafkaConfiguration {
 		}
 	}
 	
+	@Bean
 	public KafkaTemplate<String, FcmNotification> kafkaTemplate(){
-		return new KafkaTemplate<String, FcmNotification>(producerFactory());
+		return new KafkaTemplate<>(producerFactory());
 	}
 }

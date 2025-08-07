@@ -11,88 +11,116 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.food.restaurant.adapter.constant.AppConstant;
+import com.food.restaurant.adapter.mapper.FoodItemMapper;
+import com.food.restaurant.adapter.mapper.RestaurantMapper;
+import com.food.restaurant.adapter.model.AddFoodItemDto;
+import com.food.restaurant.adapter.model.AddFoodItemRequest;
 import com.food.restaurant.adapter.model.AddFoodItemResponse;
 import com.food.restaurant.adapter.model.AllRestaurantResponse;
 import com.food.restaurant.adapter.model.CategoryMenuDto;
 import com.food.restaurant.adapter.model.CategoryMenuResponse;
+import com.food.restaurant.adapter.model.FoodItemDto;
+import com.food.restaurant.adapter.model.GenericResponse;
+import com.food.restaurant.adapter.model.RestaurantDto;
+import com.food.restaurant.adapter.model.StatusCode;
 import com.food.restaurant.adapter.service.RestaurantService;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.entity.Restaurant;
 
 
 @RestController
-@RequestMapping("/restaurant")
+@RequestMapping(AppConstant.RESTAURANT_CONTROLLER)
 public class RestaurantController {
 	
 	@Autowired
 	private RestaurantService restaurantService;
 	
-	@PostMapping("/addFoodItems")
-	public ResponseEntity<AddFoodItemResponse> addFoodItem(@RequestParam FoodItem addFoodItemDto){
+	@Autowired
+	private RestaurantMapper restaurantMapper;
+	
+	
+	@PostMapping(AppConstant.CREATE_RESTAURANT)
+	public GenericResponse<?> createRestaurant(@RequestBody RestaurantDto restaurant){
 		try {
-			return new ResponseEntity<>(restaurantService.addFoodItems(addFoodItemDto), HttpStatus.OK);
+			
+			Restaurant res = restaurantMapper.dtoToEntity(restaurant);
+			Restaurant restaurant1 = restaurantService.createRestaurant(res);
+			if(restaurant1 == null) {
+				return new GenericResponse<>("Restaurant not created...", StatusCode.of(HttpStatus.BAD_REQUEST), null);
+			}
+			
+			return new GenericResponse<>("Restaurant created successfully!!", StatusCode.of(HttpStatus.OK), restaurant1);
 		} catch (Exception e) {
-			AddFoodItemResponse response = new AddFoodItemResponse();
-			response.setAddFoodItemDto(null);
-			response.setMessage("Internal Server Error");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong.....", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
-	@PutMapping("/updateRestaurant")
-	public ResponseEntity<?> updateRestaurant(@RequestParam Restaurant restaurant){
+	@PostMapping(AppConstant.ADD_FOOD_ITEMS)
+	public GenericResponse<AddFoodItemResponse> addFoodItem(@RequestBody FoodItemDto addFoodItemDto){
 		try {
-			return new ResponseEntity<>(restaurantService.updateRestaurant(restaurant), HttpStatus.OK);
+			
+			return new GenericResponse<>("Food item added successfully!!",  StatusCode.of(HttpStatus.OK), restaurantService.addFoodItems(addFoodItemDto));
 		} catch (Exception e) {
-			return new ResponseEntity<>("The error in updating the restaurant details", HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Internal Server Error", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
-	@DeleteMapping("/deleteRestaurant")
-	public ResponseEntity<?> deleteRestaurant(@RequestParam String Restaurant_name){
+	@PutMapping(AppConstant.UPDATE_RESTAURANT)
+	public GenericResponse<Restaurant> updateRestaurant(@RequestBody RestaurantDto restaurant){
 		try {
-			restaurantService.deleteRestaurant(Restaurant_name);
-			return new ResponseEntity<>("The restaurant has been deleted successfully!", HttpStatus.OK);
+			Restaurant res = restaurantMapper.dtoToEntity(restaurant);
+			Restaurant result = restaurantService.updateRestaurant(res);
+			return new GenericResponse<>("Restaurant Details updated successfully!!",StatusCode.of(HttpStatus.OK), result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse<>("The error in updating the restaurant details", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
+		}
+	}
+	
+	@DeleteMapping(AppConstant.DELETE_RESTAURANT)
+	public GenericResponse<?> deleteRestaurant(@RequestParam UUID restaurant_id){
+		try {
+			restaurantService.deleteRestaurant(restaurant_id);
+			return new GenericResponse<>("The restaurant has been deleted successfully!", StatusCode.of(HttpStatus.OK), null);
 			
 		} catch (Exception e) {
-			return new ResponseEntity<>("There has something went wrong ion deleting the restaurant!!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("There has something went wrong ion deleting the restaurant!!", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR),null);
 		}
 	}
 	
-	@GetMapping("/getAllRestaurant")
-	public ResponseEntity<AllRestaurantResponse> getAllRestaurant(){
+	@GetMapping(AppConstant.GET_ALL_RESTAURANT)
+	public GenericResponse<AllRestaurantResponse> getAllRestaurant(){
 		try {
 			List<Restaurant> allRestaurants = restaurantService.getAllRestaurant();
 			AllRestaurantResponse res = new AllRestaurantResponse();
 			res.setAllRestaurant(allRestaurants);
-			res.setMessage("The restaurant has been fetch succesfully");
 			
 			
-			return new ResponseEntity<AllRestaurantResponse>(res, HttpStatus.OK);
+			return new GenericResponse<>("The restaurant has been fetch succesfully",StatusCode.of(HttpStatus.OK), res);
 			
 		} catch (Exception e) {
-			AllRestaurantResponse res = new AllRestaurantResponse();
-			res.setAllRestaurant(null);
-			res.setMessage("Error in getAllRestaurant service");
-			return new ResponseEntity<AllRestaurantResponse>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<AllRestaurantResponse>("Error in getAllRestaurant service", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
-	@GetMapping("/getMenuForRestaurant/{restaurant_id}")
-	public ResponseEntity<CategoryMenuResponse> getMenuForRestaurant(@PathVariable UUID restaurant_id){
+	@GetMapping(AppConstant.GET_MENU_FOR_RESTAURANT)
+	public GenericResponse<CategoryMenuResponse> getMenuForRestaurant(@PathVariable UUID restaurant_id){
 		try {
 			CategoryMenuResponse res = new CategoryMenuResponse();
 			List<CategoryMenuDto> result = restaurantService.getMenuOfRestaurant(restaurant_id);
 			res.setMenu(result);
-			res.setMessage("The menu for the perticular restaurant has been fetched successfully");
-			return new ResponseEntity<>(res, HttpStatus.OK);
+			return new GenericResponse<>("The menu for the perticular restaurant has been fetched successfully",StatusCode.of(HttpStatus.OK), res);
 		} catch (Exception e) {
-			CategoryMenuResponse res = new CategoryMenuResponse();
-			res.setMessage("The error occur while executing the getMenuForResturant");
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("The error occur while executing the getMenuForResturant",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 }

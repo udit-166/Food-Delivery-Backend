@@ -35,10 +35,13 @@ import com.food.restaurant.core.entity.Restaurant;
 @Service
 public class RestaurantUsecaseimpl implements RestaurantUsecase{
 	
+	@Autowired
 	private RestaurantRepositories restaurantRepositories;
 	
+	@Autowired
 	private FoodItemRepositories foodItemRepositories;
 	
+	@Autowired
 	private CategoryRepository categoryRepository;
 	
 	@Autowired
@@ -55,23 +58,23 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 	}
 
 	@Override
-	public AddFoodItemResponse addFoodItems(FoodItem foodItem) {
-		if (foodItem.getRestaurant() == null || foodItem.getRestaurant().getId() == null) {
+	public AddFoodItemResponse addFoodItems(FoodItemDto foodItem) {
+		if (foodItem.getRestaurantId() == null) {
 		    AddFoodItemResponse failedResponse = new AddFoodItemResponse();
 		    failedResponse.setMessage("Restaurant ID is missing or null. Food item not added.");
 		    return failedResponse;
 		}
 
 		// Validate category_id
-		if (foodItem.getCategory() == null || foodItem.getCategory().getId() == null) {
+		if (foodItem.getCategoryId() == null) {
 		    AddFoodItemResponse failedResponse = new AddFoodItemResponse();
 		    failedResponse.setMessage("Category ID is missing or null. Food item not added.");
 		    return failedResponse;
 		}
 
 		// Fetch restaurant and category from DB
-		Optional<Restaurant> optionalRestaurant = restaurantRepositories.findById(foodItem.getRestaurant().getId());
-		Optional<Categories> optionalCategory = categoryRepository.findById(foodItem.getCategory().getId());
+		Optional<Restaurant> optionalRestaurant = restaurantRepositories.findById(foodItem.getRestaurantId());
+		Optional<Categories> optionalCategory = categoryRepository.findById(foodItem.getCategoryId());
 
 		if (optionalRestaurant.isEmpty() || optionalCategory.isEmpty()) {
 		    AddFoodItemResponse failedResponse = new AddFoodItemResponse();
@@ -94,13 +97,15 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		// Prepare response
 		AddFoodItemResponse response = new AddFoodItemResponse();
 		response.setMessage("Food item added successfully!");
+		
 		FcmNotification notification = new FcmNotification();
+		
 		
 		notification.setTo("");
 		notification.setTitle("");
 		notification.setBody(null);
 		
-		kafkaTemplate.send("send-notification", notification);
+		//kafkaTemplate.send("send-notification", notification);
 		return response;
 		}
 
@@ -120,8 +125,9 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		if(restaurant == null) {
 			return null;
 		}
-		Restaurant updateRestaurant = restaurantRepositories.findByName(restaurant.getName());
-		
+		Optional<Restaurant> temp = restaurantRepositories.findById(restaurant.getId());
+		if(temp.isPresent()) {
+		Restaurant updateRestaurant = temp.get();
 		updateRestaurant.setAverage_rating(restaurant.getAverage_rating());
 		updateRestaurant.setImage_url(restaurant.getImage_url());
 		updateRestaurant.setClosing_time(restaurant.getClosing_time());
@@ -138,18 +144,22 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		notification.setTitle("");
 		notification.setBody(null);
 		
-		kafkaTemplate.send("send-notification", notification);
+		//kafkaTemplate.send("send-notification", notification);
 		
 		return restaurantRepositories.save(updateRestaurant);
+		
+		}
+		return null;
 	}
 
 	@Override
-	public void deleteRestaurant(String restaurant_name) {
-		Restaurant deleteRestaurant = restaurantRepositories.findByName(restaurant_name);
-		
-		deleteRestaurant.setIs_active(false);
-		
-		restaurantRepositories.save(deleteRestaurant);
+	public void deleteRestaurant(UUID restaurant_id) {
+		Optional<Restaurant> deleteRestaurant = restaurantRepositories.findById(restaurant_id);
+		if(deleteRestaurant.isPresent()) {
+			Restaurant inActiveRestaurant = deleteRestaurant.get();
+			inActiveRestaurant.setIs_active(false);
+			restaurantRepositories.save(inActiveRestaurant);
+		}
 		
 	}
 
@@ -173,11 +183,12 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 	    	    .collect(Collectors.groupingBy(
 	    	        item -> item.getCategory().getCategory(),
 	    	        Collectors.mapping(item -> new FoodItemDto(
+	    	        	item.getId(),
 	    	            item.getName(),
 	    	            item.getDescription(),
 	    	            item.getPrice(),
 	    	            item.getRating(),
-	    	            item.getImageUrl()
+	    	            item.getImageUrl(), null, null, null
 	    	        ), Collectors.toList())
 	    	    ));
 
@@ -192,6 +203,28 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 	    }
 
 	    return menu;
+	}
+
+	@Override
+	public Restaurant createRestaurant(Restaurant restaurant) {
+		Restaurant res = new Restaurant();
+		
+		res.setName(restaurant.getName());
+		res.setUser_id(restaurant.getUser_id());
+		res.setCustomer_care_number(restaurant.getCustomer_care_number());
+		res.setClosing_time(restaurant.getClosing_time());
+		res.setImage_url(restaurant.getImage_url());
+		res.setIs_active(restaurant.getIs_active());
+		res.setOpening_time(restaurant.getOpening_time());
+		res.setTotal_rating(0);
+		res.setRestaurant_email(restaurant.getRestaurant_email());
+		res.setAverage_rating(0.00);
+		res.setFoodItems(restaurant.getFoodItems());
+		
+		res.setCategoriesId(res.getCategoriesId());
+		
+		
+		return restaurantRepositories.save(restaurant);
 	}
 
 

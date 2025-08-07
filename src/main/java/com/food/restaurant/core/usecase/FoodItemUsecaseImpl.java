@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,8 +16,10 @@ import com.food.restaurant.adapter.model.FcmNotification;
 import com.food.restaurant.adapter.repository.FoodItemRepositories;
 import com.food.restaurant.core.entity.FoodItem;
 
+@Service
 public class FoodItemUsecaseImpl implements FoodItemUsecase{
 	
+	@Autowired
 	private FoodItemRepositories foodItemRepositories;
 	
 	@Autowired

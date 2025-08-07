@@ -5,10 +5,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.food.restaurant.core.entity.Restaurant;
 import com.food.restaurant.core.repository.RestaurantRepository;
 
+@Repository
 public class RestaurantRepositoriesImpl implements RestaurantRepositories{
 	
 	@Autowired

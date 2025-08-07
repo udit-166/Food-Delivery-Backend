@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.food.restaurant.adapter.constant.AppConstant;
 
 import jakarta.persistence.Entity;
@@ -38,6 +39,7 @@ public class FoodItem {
 	
 	@ManyToOne
     @JoinColumn(name = "category_id")
+	@JsonBackReference
 	private Categories category;
 	
 	private Integer price;
@@ -50,6 +52,7 @@ public class FoodItem {
 	
 	@ManyToOne
     @JoinColumn(name = "restaurant_id")
+	@JsonBackReference
     private Restaurant restaurant;
 	
 	@CreationTimestamp

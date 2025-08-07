@@ -2,8 +2,12 @@ package com.food.restaurant.adapter.serviceImpl;
 
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.food.restaurant.adapter.mapper.FoodItemMapper;
+import com.food.restaurant.adapter.model.FoodItemDto;
 import com.food.restaurant.adapter.service.FoodItemService;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.usecase.FoodItemUsecase;
@@ -11,8 +15,11 @@ import com.food.restaurant.core.usecase.FoodItemUsecase;
 @Service
 public class FoodItemServiceImpl implements FoodItemService{
 	
-	
+	@Autowired
 	private FoodItemUsecase foodItemUsecase;
+	
+	@Autowired
+	private FoodItemMapper foodItemMapper;
 
 	@Override
 	public List<FoodItem> getAllFoodItems() {
@@ -37,8 +44,9 @@ public class FoodItemServiceImpl implements FoodItemService{
 	}
 
 	@Override
-	public FoodItem updateFoodItem(FoodItem foodItem) {
-		return foodItemUsecase.updateFoodItem(foodItem);
+	public FoodItem updateFoodItem(FoodItemDto foodItem) {
+		FoodItem convertedFoodItem = foodItemMapper.dtoToEntity(foodItem);
+		return foodItemUsecase.updateFoodItem(convertedFoodItem);
 	}
 
 	@Override

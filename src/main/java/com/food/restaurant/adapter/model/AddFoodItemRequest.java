@@ -2,20 +2,11 @@ package com.food.restaurant.adapter.model;
 
 import java.util.UUID;
 
-import com.food.restaurant.core.entity.Categories;
-import com.food.restaurant.core.entity.Restaurant;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class FoodItemDto {
-	
-	private UUID id;
-    private String name;
+public class AddFoodItemRequest {
+	private String name;
     private String description;
     private Integer price;
     private Double rating;
@@ -23,5 +14,4 @@ public class FoodItemDto {
     private Boolean is_active;
     private UUID categoryId;
     private UUID restaurantId;
-    
 }

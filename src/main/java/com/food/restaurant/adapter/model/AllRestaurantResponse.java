@@ -15,5 +15,4 @@ public class AllRestaurantResponse {
 
 	private List<Restaurant> allRestaurant;
 	
-	private String message;
 }

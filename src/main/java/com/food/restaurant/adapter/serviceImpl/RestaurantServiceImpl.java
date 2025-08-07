@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.food.restaurant.adapter.model.AddFoodItemResponse;
 import com.food.restaurant.adapter.model.CategoryMenuDto;
+import com.food.restaurant.adapter.model.FoodItemDto;
 import com.food.restaurant.adapter.service.RestaurantService;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.entity.Restaurant;
@@ -19,7 +20,7 @@ public class RestaurantServiceImpl implements RestaurantService{
 	private RestaurantUsecase restaurantUsecase;
 
 	@Override
-	public AddFoodItemResponse addFoodItems(FoodItem foodItem) {
+	public AddFoodItemResponse addFoodItems(FoodItemDto foodItem) {
 		return restaurantUsecase.addFoodItems(foodItem);
 	}
 
@@ -41,14 +42,19 @@ public class RestaurantServiceImpl implements RestaurantService{
 	}
 
 	@Override
-	public void deleteRestaurant(String restaurant_name) {
-		restaurantUsecase.deleteRestaurant(restaurant_name);
+	public void deleteRestaurant(UUID restaurant_id) {
+		restaurantUsecase.deleteRestaurant(restaurant_id);
 		
 	}
 
 	@Override
 	public List<CategoryMenuDto> getMenuOfRestaurant(UUID restaurant_id) {
 		return restaurantUsecase.getMenuOfRestaurant(restaurant_id);
+	}
+
+	@Override
+	public Restaurant createRestaurant(Restaurant restaurant) {
+		return restaurantUsecase.createRestaurant(restaurant);
 	}
 
 }

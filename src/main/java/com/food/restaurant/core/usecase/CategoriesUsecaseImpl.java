@@ -1,6 +1,7 @@
 package com.food.restaurant.core.usecase;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.food.restaurant.adapter.repository.CategoryRepository;
@@ -9,6 +10,7 @@ import com.food.restaurant.core.entity.Categories;
 @Service
 public class CategoriesUsecaseImpl implements CategoriesUsecase{
 	
+	@Autowired
 	private CategoryRepository categoryRepository;
 
 	@Override

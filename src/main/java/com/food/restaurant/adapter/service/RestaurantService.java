@@ -5,12 +5,15 @@ import java.util.UUID;
 
 import com.food.restaurant.adapter.model.AddFoodItemResponse;
 import com.food.restaurant.adapter.model.CategoryMenuDto;
+import com.food.restaurant.adapter.model.FoodItemDto;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.entity.Restaurant;
 
 public interface RestaurantService {
+	
+	public Restaurant createRestaurant(Restaurant restaurant);
 
-	public AddFoodItemResponse addFoodItems(FoodItem foodItem); 
+	public AddFoodItemResponse addFoodItems(FoodItemDto foodItem); 
 	
 	public List<Restaurant> getAllRestaurant();
 	
@@ -18,7 +21,7 @@ public interface RestaurantService {
 	
 	public Restaurant updateRestaurant (Restaurant restaurant);
 	
-	public void deleteRestaurant(String restaurant_name);
+	public void deleteRestaurant(UUID restaurant_id);
 	
 	public List<CategoryMenuDto> getMenuOfRestaurant(UUID restaurant_id);
 }

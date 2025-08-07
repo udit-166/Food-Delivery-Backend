@@ -1,12 +1,14 @@
 package com.food.restaurant.core.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.food.restaurant.adapter.constant.AppConstant;
 
 import jakarta.persistence.CascadeType;
@@ -63,9 +65,13 @@ public class Restaurant {
 	
 	private Boolean is_active;
 	
+	@Column(nullable = true)
+	private ArrayList<UUID> categoriesId;
+	
 	
 	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
 	@Column(nullable = true)
+	@JsonManagedReference
     private List<FoodItem> foodItems;
 	
 	@CreationTimestamp

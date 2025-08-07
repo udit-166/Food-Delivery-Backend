@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.food.restaurant.adapter.constant.AppConstant;
 
 import jakarta.persistence.CascadeType;
@@ -33,10 +34,8 @@ public class Categories {
 	
 	private String category;
 	
-	private String ImageUrl;
+	private String imageUrl;
 	
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-	private List<FoodItem> food_item;
 	
 	@CreationTimestamp
 	private LocalDateTime created_at;

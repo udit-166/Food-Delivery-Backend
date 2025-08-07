@@ -1,7 +1,5 @@
 package com.food.restaurant.adapter.model;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryMenuResponse {
+public class GenericResponse<T> {
 
-	private List<CategoryMenuDto> menu;
+	private String message;
 	
+	private StatusCode status;
+	
+	private T data;
 }

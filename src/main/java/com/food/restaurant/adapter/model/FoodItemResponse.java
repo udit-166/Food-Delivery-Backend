@@ -20,5 +20,5 @@ public class FoodItemResponse {
 	
 	private UUID category_name;
 	
-	private String message;
+
 }
