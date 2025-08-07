@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class AddressResponse {
 	
 	private ArrayList<Address> addresses;
-	private String message;
+
 }

@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth.user.adapter.service.AuthService;
 import com.auth.user.common.constant.AppConstants;
 import com.auth.user.core.entity.User;
+import com.auth.user.core.model.GenericResponse;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.LoginResponse;
 import com.auth.user.core.model.RefreshTokenRequestDto;
 import com.auth.user.core.model.RefreshTokenResponse;
+import com.auth.user.core.model.StatusCode;
 import com.auth.user.core.model.UserDto;
+import com.auth.user.core.model.VerifyOtpRequestDto;
 import com.auth.user.core.model.otpResponse;
 import com.auth.user.core.utils.GoogleTokenValidator;
 import com.auth.user.core.utils.JwtAuthentication;
@@ -43,7 +46,7 @@ public class AuthController {
 	}
 	
 	@PostMapping(AppConstants.LOGIN)
-	public ResponseEntity<LoginResponse> login(@RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String oauthToken, @RequestParam(required=false) Location location){
+	public GenericResponse<LoginResponse> login(@RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String oauthToken, @RequestParam(required=false) Location location){
 
 		try {
 			LoginResponse response = new LoginResponse();
@@ -51,8 +54,11 @@ public class AuthController {
 				//google sign-in login flow
 				Payload payload = googleTokenValidator.verifyGoogleToken(oauthToken);
 				if(payload == null ) {
-					response.setMessage("Invalid google login");
-					return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+					return new GenericResponse<>(
+							"Invalid Google login",
+							StatusCode.of(HttpStatus.UNAUTHORIZED),
+							null
+						);
 				}
 				String email = payload.getEmail();
 				String googleId = payload.getSubject();
@@ -69,118 +75,104 @@ public class AuthController {
 					userToRegister.setVerified(true);
 					
 					UserDto registerUser = authService.register(userToRegister);
-					String jwtToken = jwtAuthentication.generateToken(registerUser.getPhone());
+					String jwtToken = "Bearer "+jwtAuthentication.generateToken(registerUser.getPhone());
 					
 					response.setUser(registerUser);
-					response.setMessage("Google Sign-in successfully done!");
 					response.setJwt(jwtToken);
-					return new ResponseEntity<>(response, HttpStatus.OK);
+					return new GenericResponse<>("User login with google successfully!!", StatusCode.of(HttpStatus.OK), response);
 				}
 				
 				// generating the jwt token for exisiting google user
 				
-				String jwtToken = jwtAuthentication.generateToken(user.getEmail());
+				String jwtToken = "Bearer "+jwtAuthentication.generateToken(user.getEmail());
 				response.setUser(user);
-				response.setMessage("Google Sign-in done successfully!");
 				response.setJwt(jwtToken);
 				
-				return new ResponseEntity<>(response, HttpStatus.OK);
+				return new GenericResponse<>("user login with email successfully!!", StatusCode.of(HttpStatus.OK), response);
 			}
 		
 		if(phoneNumber != null) {
 			UserDto user = authService.login(phoneNumber);
 			
 			if(user!=null) {
-				String token = jwtAuthentication.generateToken(phoneNumber);
+				String token = "Bearer "+jwtAuthentication.generateToken(phoneNumber);
 				response.setUser(user);
-				response.setMessage("You have login successfully!");
 				response.setJwt(token);
 				
-				return new ResponseEntity<>(response, HttpStatus.OK);
+				return new GenericResponse<>("User login with phone number successfully!!", StatusCode.of(HttpStatus.OK), response);
 			}
 			else {
-				response.setMessage("User didn't find with this phone number");
-				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+				return new GenericResponse<>("User didn't find with this phone number", StatusCode.of(HttpStatus.NOT_FOUND), response);
 			}
 		}
-			response.setMessage("Either phoneNumber or googleToken is required");
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			return new GenericResponse<>("Either phoneNumber or googleToken is required", StatusCode.of(HttpStatus.OK), response);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-		    LoginResponse response = new LoginResponse();
-		    response.setMessage("An error occurred during login: " + e.getMessage());
-		    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		    return new GenericResponse<>("An error occurred during login: " + e.getMessage(), StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PostMapping(AppConstants.REGISTER_USER)
-	public ResponseEntity<LoginResponse> registerUser(@RequestBody User user){
+	public GenericResponse<LoginResponse> registerUser(@RequestBody User user){
 		try {
 			LoginResponse response  =  new LoginResponse();
 			UserDto existUser = authService.login(user.getPhone());
 			
 			if(existUser != null) {
 				response.setUser(null);
-				response.setMessage("User Already exist with is phone number!!");
 				response.setJwt(null);
-				return new ResponseEntity<>(response,HttpStatus.CONFLICT);
+				return new GenericResponse<>("User Already exist with phone number", StatusCode.of(HttpStatus.ALREADY_REPORTED), response);
 			}
 			UserDto registerUser = authService.register(user);
-			String token = jwtAuthentication.generateToken(registerUser.getPhone());
+			String token = "Bearer "+jwtAuthentication.generateToken(registerUser.getPhone());
 			
 			response.setUser(registerUser);
-			response.setMessage("The User register successfully");
 			response.setJwt(token);
 			
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("User login register successfully!!", StatusCode.of(HttpStatus.OK), response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		    LoginResponse response = new LoginResponse();
-		    response.setMessage("An error occurred during registration: " + e.getMessage());
-		    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		    return new GenericResponse<>("An error occurred during registration: \" + e.getMessage()", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PostMapping(AppConstants.REFRESH_TOKEN)
-	public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequestDto request){
+	public GenericResponse<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequestDto request){
 		try {
 			RefreshTokenResponse token = authService.refreshJwtToken(request.getPhone_number());
-			return new ResponseEntity<RefreshTokenResponse>(token,HttpStatus.OK);
+			return new GenericResponse<>("Refresh token generated successfully!!", StatusCode.of(HttpStatus.OK), token);
 		} catch (Exception e) {
-			RefreshTokenResponse res = new RefreshTokenResponse();
-			res.setToken(null);
-			res.setMessgae("something went wrong!!");
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("something went wrong!!", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstants.SEND_OTP)
-	public ResponseEntity<String> sendOtp(@PathVariable String phone_number){
+	public GenericResponse<String> sendOtp(@PathVariable String phone_number){
 		try {
 			authService.sendOtp(phone_number);
-			return new ResponseEntity<>("The otp send successfully!!", HttpStatus.OK);
+			return new GenericResponse<>("The otp send successfully!!", StatusCode.of(HttpStatus.OK), null);
 		} catch (Exception e) {
-			return new ResponseEntity<String>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PostMapping(AppConstants.VERIFY_OTP)
-	public ResponseEntity<String> verifyOtp(@RequestParam String phone_number, @RequestParam String otp){
+	public GenericResponse<String> verifyOtp(@RequestBody VerifyOtpRequestDto request){
 		try {
-			if(phone_number == null || otp == null) {
-				return new ResponseEntity<String>("The parameters are missing!",HttpStatus.BAD_REQUEST);
+			if(request.getPhone_number() == null || request.getOtp() == null) {
+				return new GenericResponse<>("The parameters are missing!",StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			
-			if(!authService.validateOtp(phone_number, otp)) {
-				return new ResponseEntity<String>("The otp is incorrect or expired. Click on resend to get new OTP",HttpStatus.BAD_REQUEST);
+			if(!authService.validateOtp(request.getPhone_number(), request.getOtp())) {
+				return new GenericResponse<>("The otp is incorrect or expired. Click on resend to get new OTP",StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
-			return new ResponseEntity<String>("The phone_number is verified successfully!!", HttpStatus.OK);
+			return new GenericResponse<>("The phone_number is verified successfully!!", StatusCode.of(HttpStatus.OK), null);
 		} catch (Exception e) {
 
 			e.printStackTrace();
-			return new ResponseEntity<String>("The service is not running.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("The service is not running.", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	

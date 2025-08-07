@@ -21,19 +21,19 @@ public class AppConstants {
 	
 	public static final String TWILIO_SEND_ID = "FSTSMS";
 	
-	public static final String USER_CONTROLLER = "/user";
+	public static final String USER_CONTROLLER = "/api/users";
 	
-	public static final String GET_PROFILE_BY_PHONE_NUMBER = "/getProfileDetails/{phone_number}";
+	public static final String GET_PROFILE_BY_PHONE_NUMBER = "/getProfileDetails/phone/{phone_number}";
 	
-	public static final String GET_PROFILE_BY_EMAIL = "/getProfileDetails/{email}";
+	public static final String GET_PROFILE_BY_EMAIL = "/getProfileDetails/email/{email}";
 	
 	public static final String UPDATE_PROFILE = "/updateProfile";
 	
-	public static final String GET_ROLE = "/getRoleOfUser/{userId}";
+	public static final String GET_ROLE = "/getRoleOfUser";
 	
-	public static final String GET_CURRENT_ADDRESS = "/getCurrentAddress/{userId}";
+	public static final String GET_CURRENT_ADDRESS = "/getCurrentAddress";
 	
-	public static final String GET_ALL_ADDRESS_OF_USER = "/getListOfAddress/{userId}";
+	public static final String GET_ALL_ADDRESS_OF_USER = "/getListOfAddress";
 	
 	public static final String SAVE_ADDRESS = "/saveAddress";
 	
@@ -43,7 +43,7 @@ public class AppConstants {
 	
 	public static final String DELETE_ACCOUNT = "/deleteAccount";
 	
-	public static final String AUTH_CONTROLLER = "/auth";
+	public static final String AUTH_CONTROLLER = "/api/auth";
 	
 	public static final String LOGIN = "/login";
 	

@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class UserDetailsResponse {
 
 	private UserDto user;
-	private String message;
 }

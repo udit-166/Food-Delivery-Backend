@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.auth.user.common.constant.AppConstants;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -52,6 +53,7 @@ public class User {
 	private Location location;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonManagedReference
 	private List<Address> address;
 
 	private String profileImageUrl;

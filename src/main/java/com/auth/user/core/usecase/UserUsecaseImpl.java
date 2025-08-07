@@ -25,16 +25,16 @@ public class UserUsecaseImpl implements UserUsecase{
 	
 	private AddressRepository addressRepository;
 	
-	private UserMapper userMapper;
 	private Haversine haversine;
 	
-	private UserUsecaseImpl(UserRepository userRepository) {
+	private UserUsecaseImpl(UserRepository userRepository, AddressRepository addressRepository, Haversine haversine) {
 		this.userRepository = userRepository;
-		
+		this.addressRepository = addressRepository;
+		this.haversine = haversine;
 	}
 
 	@Override
-	public UserDto findUserByPhoneNumberOrEmail(String phone_number, String email) {
+	public User findUserByPhoneNumberOrEmail(String phone_number, String email) {
 		User user = new User();
 		if(phone_number  != null) {
 			user = userRepository.findUserByPhoneNumber(phone_number);
@@ -42,12 +42,12 @@ public class UserUsecaseImpl implements UserUsecase{
 		else {
 			user = userRepository.findUserByEmail(email);
 		}
-		UserDto resultantUser = userMapper.entityToDto(user);
-		return resultantUser;
+		
+		return user;
 	}
 
 	@Override
-	public UserDto updateuserProfile(UserDto userForEdit) {
+	public User updateuserProfile(UserDto userForEdit) {
 		 Optional<User> user = userRepository.findById(userForEdit.getId());
 		 
 		 if(user.isPresent()) {
@@ -62,9 +62,8 @@ public class UserUsecaseImpl implements UserUsecase{
 			 
 			 User result = userRepository.save(userEdit);
 			 
-			 UserDto updatedUser = userMapper.entityToDto(result);
 			 
-			 return updatedUser;
+			 return result;
 			 
 		 }
 		 return null;
@@ -145,6 +144,7 @@ public class UserUsecaseImpl implements UserUsecase{
 		result.setAddress(address.getAddress());
 		result.setLatitude(address.getLatitude());
 		result.setLongitude(address.getLongitude());
+		result.setIsDefault(address.getIsDefault());
 		
 		addressRepository.save(result);
 		
@@ -154,7 +154,7 @@ public class UserUsecaseImpl implements UserUsecase{
 	}
 
 	@Override
-	public UserDto updateUserMetaDataInfo(UpdateMetaDataRequest metaData) {
+	public User updateUserMetaDataInfo(UpdateMetaDataRequest metaData) {
 		 Optional<User> user = userRepository.findById(metaData.getId());
 		 
 		 if(user.isPresent()) {
@@ -163,16 +163,15 @@ public class UserUsecaseImpl implements UserUsecase{
 			 existingUser.setDevice_id(metaData.getDevice_id());
 			 existingUser.setFcmToken(metaData.getFcmToken());
 			 
-			 userRepository.save(existingUser);
+			 User user1 = userRepository.save(existingUser);
 			 
-			 UserDto result = userMapper.entityToDto(existingUser);
-			 return result;
+			 return user1;
 		 }
 		return null;
 	}
 
 	@Override
-	public UserDto deActivateUser(UUID userId) {
+	public User deActivateUser(UUID userId) {
 		 Optional<User> user = userRepository.findById(userId);
 		 
 		 if(user.isPresent()) {
@@ -180,8 +179,7 @@ public class UserUsecaseImpl implements UserUsecase{
 			 existingUser.setActive(false);
 			 
 			User temp =  userRepository.save(existingUser);
-			UserDto result = userMapper.entityToDto(temp);
-			return result;
+			return temp;
 		 }
 		 return null;
 	}

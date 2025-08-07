@@ -17,6 +17,5 @@ public class UpdatedMetaDataResponse {
 	private String device_id;
 	
 	private Double app_version;
-	
-	private String message;
+
 }

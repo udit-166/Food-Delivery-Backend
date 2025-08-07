@@ -3,6 +3,7 @@ package com.auth.user.core.entity;
 import java.util.UUID;
 
 import com.auth.user.common.constant.AppConstants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,9 +35,10 @@ public class Address {
 	
 	private Double longitude;
 	
-	private boolean isDefault;
+	private Boolean isDefault;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonBackReference
 	private User user;
 }

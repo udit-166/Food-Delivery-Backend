@@ -1,5 +1,8 @@
 package com.auth.user.core.utils;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Haversine {
 
 	public double haversine(double lat1, double lon1, double lat2, double lon2) {

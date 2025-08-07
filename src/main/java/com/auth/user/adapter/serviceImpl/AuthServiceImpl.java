@@ -47,7 +47,6 @@ public class AuthServiceImpl implements AuthService{
 		String token =  authUsecase.refreshToken(phone);
 		RefreshTokenResponse res = new RefreshTokenResponse();
 		res.setToken(token);
-		res.setMessgae("Refresh token generated successfully!!");
 		return res;
 	}
 

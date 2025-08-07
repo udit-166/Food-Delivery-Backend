@@ -11,7 +11,6 @@ public class LoginResponse {
 	
 	private UserDto user;
 	
-	private String message;
 	
 	private String jwt;
 }

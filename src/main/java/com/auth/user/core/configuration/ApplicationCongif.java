@@ -19,7 +19,7 @@ public class ApplicationCongif {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				).authorizeHttpRequests(auth->auth
-						.requestMatchers("/auth/**","/user**/").permitAll()
+						.requestMatchers("/api/auth/**","/api/users/**").permitAll()
 						.anyRequest().authenticated()
 					)
 		.csrf(csrf -> csrf.disable())

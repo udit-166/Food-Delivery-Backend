@@ -13,6 +13,5 @@ public class DeactivateUserResponse {
 	private UUID id;
 	
 	private boolean active;
-	
-	private String message;
+
 }

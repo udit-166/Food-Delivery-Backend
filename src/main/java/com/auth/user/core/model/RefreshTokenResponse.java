@@ -6,6 +6,5 @@ import lombok.Data;
 public class RefreshTokenResponse {
 
 	private String token;
-	
-	private String messgae;
+
 }

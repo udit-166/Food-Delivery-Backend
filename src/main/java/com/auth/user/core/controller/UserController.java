@@ -11,17 +11,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.auth.user.adapter.service.UserService;
 import com.auth.user.common.constant.AppConstants;
 import com.auth.user.core.entity.Address;
+import com.auth.user.core.model.AddAddressRequest;
 import com.auth.user.core.model.AddressResponse;
 import com.auth.user.core.model.DeactivateUserResponse;
+import com.auth.user.core.model.GenericResponse;
+import com.auth.user.core.model.GetCurrentAddressRequest;
 import com.auth.user.core.model.Location;
 import com.auth.user.core.model.Role;
 import com.auth.user.core.model.RoleResponse;
+import com.auth.user.core.model.StatusCode;
 import com.auth.user.core.model.UpdateMetaDataRequest;
 import com.auth.user.core.model.UpdatedMetaDataResponse;
 import com.auth.user.core.model.UserDetailsResponse;
@@ -38,251 +43,194 @@ public class UserController {
 	}
 
 	@GetMapping(AppConstants.GET_PROFILE_BY_PHONE_NUMBER)
-	public ResponseEntity<UserDetailsResponse> getProfileByPhoneNumber(@PathVariable String phone_number){
+	public GenericResponse<UserDetailsResponse> getProfileByPhoneNumber(@PathVariable String phone_number){
 		try {
 			UserDetailsResponse response  = new UserDetailsResponse();
 			UserDto user = userService.findUserByPhoneNumberOrEmail(phone_number, null);
 			if(user == null) {
-				response.setMessage("User didn't found!");
-				return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("User didn't found!!",StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			response.setUser(user);
-			response.setMessage("User details fetched successfully!");
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("User details fetched successfully!",StatusCode.of(HttpStatus.OK),response);
 		} catch (Exception e) {
-			UserDetailsResponse response = new UserDetailsResponse();
-			e.printStackTrace();
-			response.setUser(null);
-			response.setMessage("Something went wrong!!");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstants.GET_PROFILE_BY_EMAIL)
-	public ResponseEntity<UserDetailsResponse> getProfileByEmail(@PathVariable String email){
+	public GenericResponse<UserDetailsResponse> getProfileByEmail(@PathVariable String email){
 		try {
 			UserDetailsResponse response  = new UserDetailsResponse();
 			UserDto user = userService.findUserByPhoneNumberOrEmail(null, email);
 			if(user == null) {
-				response.setMessage("User didn't found!");
-				return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("User didn't found!", StatusCode.of(HttpStatus.BAD_REQUEST),null);
 			}
 			response.setUser(user);
-			response.setMessage("User details fetched successfully!");
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("User details fetched successfully!", StatusCode.of(HttpStatus.OK), response);
 		} catch (Exception e) {
-			UserDetailsResponse response = new UserDetailsResponse();
-			e.printStackTrace();
-			response.setUser(null);
-			response.setMessage("Something went wrong!!");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstants.UPDATE_PROFILE)
-	public ResponseEntity<UserDetailsResponse> updateProfile(@RequestParam UserDto user){
+	public GenericResponse<UserDetailsResponse> updateProfile(@RequestBody UserDto user){
 		try {
 		UserDto updatedUser = userService.updateUserProfile(user);
 		UserDetailsResponse res = new UserDetailsResponse();
 		if(updatedUser == null) {
 			res.setUser(null);
-			res.setMessage("User not found!!");
-			return new ResponseEntity<UserDetailsResponse>(res, HttpStatus.BAD_REQUEST);
+			return new GenericResponse<>("User not found for update!!", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 		}
 		res.setUser(updatedUser);
-		res.setMessage("The user has been updated successfully!!");
-		return new ResponseEntity<>(res, HttpStatus.OK);
+		return new GenericResponse<>("The user has been updated successfully!!", StatusCode.of(HttpStatus.OK), res);
 		}
 		catch (Exception e) {
-			UserDetailsResponse  res = new UserDetailsResponse();
-			e.printStackTrace();
-			res.setUser(null);
-			res.setMessage("The error occur while executing the service!!");
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 		
 	}
 	
 	@GetMapping(AppConstants.GET_ROLE)
-	public ResponseEntity<RoleResponse> getRole (@RequestParam UUID userId){
+	public GenericResponse<RoleResponse> getRole (@RequestParam UUID userId){
 		try {
 			RoleResponse response = new RoleResponse();
 			Role role = userService.getUserRole(userId);
 			
 			if(role==null) {
-				response.setRole(null);
-				response.setMessage("The Role didn't found!!");
-				return new ResponseEntity<RoleResponse>(response, HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The Role didn't found!!", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			response.setRole(role);
-			response.setMessage("Role details fetched successfully!!");
-			return new ResponseEntity<RoleResponse>(response, HttpStatus.OK);
+			return new GenericResponse<>("Role details fetched successfully!!", StatusCode.of(HttpStatus.OK), response);
 			
 		} catch (Exception e) {
-			RoleResponse response = new RoleResponse();
-			e.printStackTrace();
-			response.setMessage("Error while fetching the role service.");
-			response.setRole(null);
-			return new ResponseEntity<RoleResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
-	@GetMapping(AppConstants.GET_CURRENT_ADDRESS)
-	public ResponseEntity<AddressResponse> getCurrentAddress(@RequestParam Location location, @PathVariable UUID userId){
+	@PostMapping(AppConstants.GET_CURRENT_ADDRESS)
+	public GenericResponse<AddressResponse> getCurrentAddress(@RequestBody GetCurrentAddressRequest request){
 		try {
 			AddressResponse res = new AddressResponse();
 			ArrayList<Address> currentAddress= new ArrayList<>();
 			
-			Address address = userService.getCurrentAddress(location, userId);
+			Address address = userService.getCurrentAddress(request.getLocation(), request.getUserId());
 			
 			if(address == null) {
 				res.setAddresses(null);
-				res.setMessage("The current address didn't found!!");
-				return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The current address didn't found!!", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			
 			currentAddress.add(address);
 			res.setAddresses(currentAddress);
-			res.setMessage("Cuurent address fetched successfully!!");
 			
-			return new ResponseEntity<>(res, HttpStatus.OK);
+			return new GenericResponse<>("Cuurent address fetched successfully!!", StatusCode.of(HttpStatus.OK), res);
 			
 		} catch (Exception e) {
-			AddressResponse res = new AddressResponse();
-			res.setAddresses(null);
-			res.setMessage("Internal server error!!");
-			
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstants.GET_ALL_ADDRESS_OF_USER)
-	public ResponseEntity<AddressResponse> getAllAddressOfUser(@RequestParam UUID userID){
+	public GenericResponse<AddressResponse> getAllAddressOfUser(@RequestParam UUID userId){
 		try {
 			AddressResponse response = new AddressResponse();
-			List<Address> address= userService.getAllAddressOfUser(userID);
+			List<Address> address= userService.getAllAddressOfUser(userId);
 			if(address.isEmpty()) {
-				response.setAddresses(null);
-				response.setMessage("The address are empty!");
-				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The address are empty!",StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			ArrayList<Address> result = new ArrayList<>(address);
 			
 			response.setAddresses(result);
-			response.setMessage("The address list fetched successfully!!");
 			
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("The address list fetched successfully!!", StatusCode.of(HttpStatus.OK), response);
 			
 		} catch (Exception e) {
-			AddressResponse response = new AddressResponse();
-			response.setAddresses(null);
-			response.setMessage("The error occur in code!!");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PostMapping(AppConstants.SAVE_ADDRESS)
-	public ResponseEntity<AddressResponse> saveAddress(@RequestParam UUID userId , @RequestParam Address address){
+	public GenericResponse<AddressResponse> saveAddress(@RequestBody AddAddressRequest request ){
 		try {
 			AddressResponse response = new AddressResponse();
-			List<Address> address1= userService.saveAddress(userId, address);
+			List<Address> address1= userService.saveAddress(request.getUserId(), request.getAddress());
 			if(address1.isEmpty()) {
-				response.setAddresses(null);
-				response.setMessage("The address are empty!");
-				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The address are empty!", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			ArrayList<Address> result = new ArrayList<>(address1);
 			
 			response.setAddresses(result);
-			response.setMessage("The address saved successfully!!");
 			
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("The address saved successfully!!", StatusCode.of(HttpStatus.OK), response);
 			
 		} catch (Exception e) {
-			AddressResponse response = new AddressResponse();
-			response.setAddresses(null);
-			response.setMessage("The error occur in code!!");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstants.UPDATE_ADDRESS)
-	public ResponseEntity<AddressResponse> updateAddress(@RequestParam Address address){
+	public GenericResponse<AddressResponse> updateAddress(@RequestBody Address address){
 		try {
 			AddressResponse response = new AddressResponse();
 			List<Address> address1= userService.updatedAddress(address);
 			if(address1.isEmpty()) {
 				response.setAddresses(null);
-				response.setMessage("The address are empty!");
-				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The address are empty!", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
 			ArrayList<Address> result = new ArrayList<>(address1);
 			
 			response.setAddresses(result);
-			response.setMessage("The address updated successfully!!");
 			
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("The address updated successfully!!", StatusCode.of(HttpStatus.OK),response);
 			
 		} catch (Exception e) {
-			AddressResponse response = new AddressResponse();
-			response.setAddresses(null);
-			response.setMessage("The error occur in code!!");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstants.UPDATE_USER_META_DATA)
-	public ResponseEntity<UpdatedMetaDataResponse> updateUserMetaData(@RequestParam UpdateMetaDataRequest dataRequest){
+	public GenericResponse<UpdatedMetaDataResponse> updateUserMetaData(@RequestBody UpdateMetaDataRequest dataRequest){
 		try {
 			UserDto user = userService.updateUserMetaDataInfo(dataRequest);
 			UpdatedMetaDataResponse response = new UpdatedMetaDataResponse();
 			if(user==null) {
-				response.setMessage("The user didn't found!");
 				response.setApp_version(dataRequest.getApp_version());
 				response.setDevice_id(dataRequest.getDevice_id());
 				response.setFcmToken(dataRequest.getFcmToken());
 				response.setId(dataRequest.getId());
-				return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+				return new GenericResponse<>("The user didn't found!", StatusCode.of(HttpStatus.ACCEPTED), response);
 			}
-			response.setMessage("The user meta data has been updated successfully!");
 			response.setApp_version(user.getApp_version());
 			response.setDevice_id(user.getDevice_id());
 			response.setFcmToken(user.getFcmToken());
 			response.setId(user.getId());
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("The user meta data has been updated successfully!",StatusCode.of(HttpStatus.OK), response);
 		} catch (Exception e) {
-			UpdatedMetaDataResponse response = new UpdatedMetaDataResponse();
-			response.setMessage("The service didn't run due to error!");
-			response.setApp_version(dataRequest.getApp_version());
-			response.setDevice_id(dataRequest.getDevice_id());
-			response.setFcmToken(dataRequest.getFcmToken());
-			response.setId(dataRequest.getId());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@DeleteMapping(AppConstants.DELETE_ACCOUNT)
-	public ResponseEntity<DeactivateUserResponse> deActivateUser(@RequestParam UUID userId){
+	public GenericResponse<DeactivateUserResponse> deActivateUser(@RequestParam UUID userId){
 		try {
 			DeactivateUserResponse response = new DeactivateUserResponse();
 			UserDto user = userService.deActivateUser(userId);
 			if(user == null) {
 				response.setId(userId);
 				response.setActive(true);
-				response.setMessage("the user not found!!");
-				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The user not found!!",StatusCode.of(HttpStatus.BAD_REQUEST), null);
+				
+				
 			}
 			
 			response.setId(userId);
 			response.setActive(false);
-			response.setMessage("The user deleted successfully!");
-			return new ResponseEntity<>(response, HttpStatus.OK);
+			return new GenericResponse<>("The user deleted successfully!",StatusCode.of(HttpStatus.OK), response);
 		} catch (Exception e) {
-			DeactivateUserResponse response = new DeactivateUserResponse();
-			response.setId(userId);
-			response.setActive(true);
-			response.setMessage("Error occur in this service");
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	

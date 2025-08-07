@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.auth.user.adapter.mapper.UserMapper;
 import com.auth.user.adapter.service.UserService;
 import com.auth.user.core.entity.Address;
 import com.auth.user.core.model.Location;
@@ -19,16 +20,21 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserUsecase userUsecase;
+	
+	@Autowired
+	private UserMapper userMapper;
 
 	@Override
 	public UserDto findUserByPhoneNumberOrEmail(String phone_number, String email) {
-		return userUsecase.findUserByPhoneNumberOrEmail(phone_number, email);
+		UserDto user = userMapper.entityToDto(userUsecase.findUserByPhoneNumberOrEmail(phone_number, email));
+		
+		return user;
 	}
 
 	@Override
 	public UserDto updateUserProfile(UserDto userForEdit) {
 		
-		return userUsecase.updateuserProfile(userForEdit);
+		return userMapper.entityToDto(userUsecase.updateuserProfile(userForEdit)) ;
 	}
 
 	@Override
@@ -60,12 +66,12 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public UserDto updateUserMetaDataInfo(UpdateMetaDataRequest metaData) {
-		return userUsecase.updateUserMetaDataInfo(metaData);
+		return userMapper.entityToDto(userUsecase.updateUserMetaDataInfo(metaData));
 	}
 
 	@Override
 	public UserDto deActivateUser(UUID userId) {
-		return userUsecase.deActivateUser(userId);
+		return userMapper.entityToDto(userUsecase.deActivateUser(userId));
 	}
 	
 

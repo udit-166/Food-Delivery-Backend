@@ -9,6 +9,5 @@ public class RoleResponse {
 
 	private Role role;
 	
-	private String message;
 	
 }
