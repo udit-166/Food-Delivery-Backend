@@ -8,11 +8,22 @@ spring:
   cloud:
     gateway:
       routes:
-      - id: AUTH_SERVICE
+      - id: AUTH-SERVICE
         uri: lb://AUTH-SERVICE
         predicates:
-        - Path= /auth/** # anything like registerUser
-
+        - Path= /api/auth/**, /api/users/** # anything like registerUser
+      - id: RESTAURANT-SERVICE
+        uri: lb://RESTAURANT-SERVICE
+        predicates:
+        - Path= /api/category/**, /api/common/**, /api/restaurant/**, /api/food/**
+      - id: ORDER-SERVICE
+        uri: lb://ORDER-SERVICE
+        predicates:
+        - Path= /api/order/**, /api/payment/**
+      - id: DELIVERY-AND-CART-SERVICE
+        uri: lb://DELIVERY-AND-CART-SERVICE
+        predicates:
+        - Path= /api/cart/**
 
 eureka:
   instance:
