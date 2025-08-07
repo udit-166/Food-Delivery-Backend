@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.order.track.adapter.constant.AppConstant;
 import com.order.track.adapter.model.OrderStatus;
 import jakarta.persistence.CascadeType;
@@ -50,9 +52,11 @@ public class Order {
 	private LocalDateTime updated_at;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<OrderItem> items;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<Payment> payments;
 	
 }

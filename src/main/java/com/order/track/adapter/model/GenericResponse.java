@@ -7,8 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CountOrderResponse {
+public class GenericResponse<T> {
+
+	private String message;
 	
-	private Integer count;
+	private StatusCode status;
 	
+	private T data;
 }

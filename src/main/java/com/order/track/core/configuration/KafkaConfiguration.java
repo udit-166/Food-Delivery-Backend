@@ -13,12 +13,13 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.order.track.adapter.model.FcmNotification;
+import com.order.track.adapter.model.HandleNotificationRequest;
 
 @Configuration
 public class KafkaConfiguration {
 
 	@Bean
-	public ProducerFactory<String, FcmNotification> producerFactory(){
+	public ProducerFactory<String, HandleNotificationRequest> producerFactory(){
 		try {
 			Map<String, Object> config = new HashMap<>();
 			
@@ -34,7 +35,7 @@ public class KafkaConfiguration {
 	}
 	
 	@Bean
-	public KafkaTemplate<String, FcmNotification> kafkaTemplate(){
+	public KafkaTemplate<String, HandleNotificationRequest> kafkaTemplate(){
 		return new KafkaTemplate<>(producerFactory());
 	}
 }

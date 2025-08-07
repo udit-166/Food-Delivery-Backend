@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.order.track.adapter.constant.AppConstant;
+import com.order.track.adapter.model.GenericResponse;
+import com.order.track.adapter.model.InitiatePaymentRequestDto;
 import com.order.track.adapter.model.PaymentDTO;
 import com.order.track.adapter.model.PaymentStatus;
+import com.order.track.adapter.model.StatusCode;
 import com.order.track.adapter.model.VerifyPaymentRequest;
 import com.order.track.adapter.service.PaymentService;
 import com.order.track.core.entity.Payment;
@@ -29,66 +33,82 @@ public class PaymentController {
 	private PaymentService paymentService;
 	
 	@PostMapping(AppConstant.INITIATE_PAYMENT)
-	ResponseEntity<PaymentDTO> initiatePayment(@RequestParam UUID orderId) throws RazorpayException{
-		return new ResponseEntity<PaymentDTO>(paymentService.initiatPayment(orderId), HttpStatus.OK);
+	GenericResponse<PaymentDTO> initiatePayment(@RequestBody InitiatePaymentRequestDto request) throws RazorpayException{
+		try {
+		return new GenericResponse<PaymentDTO>("Payment Initiated successfully!!",StatusCode.of(HttpStatus.OK),  paymentService.initiatPayment(request.getOrder_id()));
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
+		}
 	}
 	
 	@PutMapping(AppConstant.VERIFY_PAYMENT)
-	ResponseEntity<PaymentDTO> verifyPayment(@RequestParam VerifyPaymentRequest request){
+	GenericResponse<PaymentDTO> verifyPayment(@RequestBody VerifyPaymentRequest request){
 		try {
-			return new ResponseEntity<>(paymentService.verifyPayment(request), HttpStatus.OK);
+			return new GenericResponse<>("Payment verified successfully!!",StatusCode.of(HttpStatus.OK), paymentService.verifyPayment(request));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstant.REFUND_PAYMENT)
-	ResponseEntity<PaymentDTO> refundPayment(@RequestParam UUID paymentId) throws RazorpayException{
-		return new ResponseEntity<PaymentDTO>(paymentService.refundPayment(paymentId), HttpStatus.OK);
+	GenericResponse<PaymentDTO> refundPayment(@RequestParam UUID payment_id) throws RazorpayException{
+		try {
+		return new GenericResponse<PaymentDTO>("Payment refund process initiated succcessfully!!",StatusCode.of(HttpStatus.OK), paymentService.refundPayment(payment_id));
+		}catch(Exception e) {
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
+		}
 	}
 	
 	@GetMapping(AppConstant.PAYMENTS_BY_ORDER_ID)
-	ResponseEntity<List<Payment>> getListOfPaymentByOrderId(@PathVariable UUID orderId){
+	GenericResponse<List<Payment>> getListOfPaymentByOrderId(@PathVariable UUID orderId){
 		try {
-			return new ResponseEntity<List<Payment>>(paymentService.getListOfPaymentOfOrder(orderId), HttpStatus.OK);
+			return new GenericResponse<List<Payment>>("Fetched list of payment successfully!!",StatusCode.of(HttpStatus.OK), paymentService.getListOfPaymentOfOrder(orderId));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.SUCCESS_PAYMENT_BY_ORDER_ID)
-	ResponseEntity<PaymentDTO> getSuccessPayment(@PathVariable UUID orderId){
+	GenericResponse<PaymentDTO> getSuccessPayment(@PathVariable UUID orderId){
 		try {
-			return new ResponseEntity<PaymentDTO>(paymentService.getSuccessPaymentList(orderId), HttpStatus.OK);
+			return new GenericResponse<PaymentDTO>("Fetched list of successfull payment!!",StatusCode.of(HttpStatus.OK), paymentService.getSuccessPaymentList(orderId));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.PAYMENTS_BY_STATUS)
-	ResponseEntity<List<Payment>> getPaymentByStatus(@PathVariable PaymentStatus status){
+	GenericResponse<List<Payment>> getPaymentByStatus(@PathVariable PaymentStatus status){
 		try {
-			return new ResponseEntity<>(paymentService.getPaymentByStatus(status), HttpStatus.OK);
+			return new GenericResponse<>("The payment with status has been fetched successfully!!",StatusCode.of(HttpStatus.OK), paymentService.getPaymentByStatus(status));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.GET_TOTAL_EARNING_OF_RESTAURANT)
-	ResponseEntity<BigDecimal> getTotalEarningsForRestaurant(@PathVariable UUID restaurant_id){
+	GenericResponse<BigDecimal> getTotalEarningsForRestaurant(@PathVariable UUID restaurant_id){
 		try {
-			return new ResponseEntity<>(paymentService.getTotalEarningsForRestaurant(restaurant_id), HttpStatus.OK);
+			return new GenericResponse<>("fetched total earning of restaurant successfully!!",StatusCode.of(HttpStatus.OK), paymentService.getTotalEarningsForRestaurant(restaurant_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PostMapping(AppConstant.RETRY_PAYMENT)
-	ResponseEntity<PaymentDTO> retryPayment(@RequestParam UUID order_id){
+	GenericResponse<PaymentDTO> retryPayment(@RequestParam UUID order_id){
 		try {
-			return new ResponseEntity<>(paymentService.retryPayment(order_id),HttpStatus.OK);
+			return new GenericResponse<>("Request initiated to retry the payment",StatusCode.of(HttpStatus.OK), paymentService.retryPayment(order_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 }

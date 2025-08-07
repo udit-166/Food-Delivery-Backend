@@ -52,14 +52,14 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		order.setTotalPrice(total);
 		Order result = orderRepository.save(order);
 		
-		HandleNotificationRequest request = new HandleNotificationRequest();
-		
-		request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
-		request.setOrderId(result.getId().toString());
-		request.setFcmToken("");
-		request.setPhone("8887943623");
-		
-		kafkaTemplate.send("handle_order_placed", request);
+//		HandleNotificationRequest request = new HandleNotificationRequest();
+//		
+//		request.setEmail("udhishahi1606@gmail.com");   //we have to make it dynamics
+//		request.setOrderId(result.getId().toString());
+//		request.setFcmToken("");
+//		request.setPhone("8887943623");
+//		
+//		kafkaTemplate.send("handle_order_placed", request);
 		
 		return result;
 		
@@ -177,7 +177,9 @@ public class OrderUsecaseImpl implements OrderUsecase{
 	}
 
 	@Override
-	public OrderSummaryDTO orderSummary(Order order) {
+	public OrderSummaryDTO orderSummary(UUID order_id) {
+		
+		Order order = orderRepository.findById(order_id);
 		order.setStatus(OrderStatus.PLACED);
 		
 		BigDecimal total = BigDecimal.ZERO;

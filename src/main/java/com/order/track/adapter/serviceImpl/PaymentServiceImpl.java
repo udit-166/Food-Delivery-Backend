@@ -61,7 +61,7 @@ public class PaymentServiceImpl implements PaymentService{
 	@Override
 	public PaymentDTO retryPayment(UUID orderId) throws RazorpayException {
 		
-		return paymentUsecase.refundPayment(orderId);
+		return paymentUsecase.retryPayment(orderId);
 	}
 
 }

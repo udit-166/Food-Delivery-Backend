@@ -8,7 +8,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import com.order.track.adapter.constant.AppConstant;
 import com.order.track.adapter.mapper.PaymentMapper;
-import com.order.track.adapter.model.FcmNotification;
 import com.order.track.adapter.model.HandleNotificationRequest;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.PaymentDTO;
@@ -43,6 +42,7 @@ public class PaymentUsecaseImpl implements PaymentUsecase{
 
 	private VerifySignature verifySignature;
 
+	@Autowired
 	private PaymentMapper paymentMapper;
 	
 	@Autowired
@@ -60,7 +60,7 @@ public class PaymentUsecaseImpl implements PaymentUsecase{
 			
 			options.put("amount", order.getTotalPrice().multiply(new BigDecimal(100)));
 			options.put("currency", "INR");
-			options.put("reciept",orderId.toString());
+			options.put("receipt",orderId.toString());
 			options.put("payment_capture", 1);
 			
 			Order razorpayOrder = razorpay.orders.create(options);

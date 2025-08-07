@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.order.track.adapter.constant.AppConstant;
 import com.order.track.adapter.model.PaymentStatus;
 import jakarta.persistence.Entity;
@@ -36,6 +37,7 @@ public class Payment {
 	
 	@ManyToOne
     @JoinColumn(name = "order_id")
+	@JsonBackReference
     private Order order;
 	
 	private String razorpayOrderId;

@@ -29,9 +29,9 @@ public class AppConstant {
 	
 	public static final String ORDER_SUMMARY = "/order_summary";
 	
-	public static final String RAZORPAY_SECRET = "UHzyRiKK2A3LloXMTefYU3Ad";
+	public static final String RAZORPAY_SECRET = "ciupxXQlukLrJkY27JXohzE7";
 	
-	public static final String RAZORPAY_KEY = "rzp_test_V1LSdhEUVwNt9B";
+	public static final String RAZORPAY_KEY = "rzp_test_3aaBFUOTbkYqzS";
 	
 	public static final String GET_COUNT_OF_ORDER_BY_CUSTOMER_ID = "/getCountOfOrderByCustomerId/{customer_id}";
 	

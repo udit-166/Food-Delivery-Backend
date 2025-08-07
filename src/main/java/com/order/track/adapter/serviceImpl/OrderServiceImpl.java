@@ -18,7 +18,7 @@ public class OrderServiceImpl implements OrderService{
 	@Autowired
 	private OrderUsecase orderUsecase;
 
-
+	@Autowired
 	private OrderMapper orderMapper;
 	
 	@Override
@@ -71,11 +71,10 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	@Override
-	public OrderSummaryDTO orderSummary(OrderDTO order) {
+	public OrderSummaryDTO orderSummary(UUID order_id) {
 		
-		Order convertedOrder = orderMapper.dtoToEntity(order);
 		
-		return orderUsecase.orderSummary(convertedOrder);
+		return orderUsecase.orderSummary(order_id);
 	}
 
 	@Override
@@ -85,7 +84,6 @@ public class OrderServiceImpl implements OrderService{
 		
 		CountOrderResponse count = new CountOrderResponse();
 		count.setCount(orderCount);
-		count.setMessage("The count of the customer with id "+customer_id);
 		return count;
 	}
 
@@ -95,7 +93,6 @@ public class OrderServiceImpl implements OrderService{
 		Integer orderCount = orderUsecase.countOrderByRestaurantId(restaurant_id);
 		CountOrderResponse count = new CountOrderResponse();
 		count.setCount(orderCount);
-		count.setMessage("The count of the restaurant with id "+restaurant_id);
 		return count;
 	}
 

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.order.track.core.entity.OrderItem;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderDTO {
 	
+		@Column(nullable = true)
 		private UUID id;
 		
 		private UUID customerId;     //from auth-service
@@ -27,7 +29,7 @@ public class OrderDTO {
 		
 		private Boolean isActive;
 		
-		private List<OrderItem> items;
+		private List<OrderItemDto> items;
 	
 
 }

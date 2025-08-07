@@ -8,7 +8,7 @@ import com.order.track.core.entity.Order;
 
 public interface OrderUsecase {
 
-	public OrderSummaryDTO orderSummary(Order order);
+	public OrderSummaryDTO orderSummary(UUID order_id);
 	
 	public Order placeOrder(Order order);
 	

@@ -8,7 +8,7 @@ import com.order.track.adapter.model.OrderSummaryDTO;
 
 public interface OrderService {
 
-	public OrderSummaryDTO orderSummary(OrderDTO order);
+	public OrderSummaryDTO orderSummary(UUID order_id);
 	
 	public OrderDTO placeOrder(OrderDTO order);
 	

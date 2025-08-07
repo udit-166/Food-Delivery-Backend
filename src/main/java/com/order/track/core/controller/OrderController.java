@@ -9,15 +9,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.order.track.adapter.constant.AppConstant;
+import com.order.track.adapter.model.CancelOrderRequestDto;
 import com.order.track.adapter.model.CountOrderResponse;
+import com.order.track.adapter.model.GenericResponse;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.OrderStatus;
 import com.order.track.adapter.model.OrderSummaryDTO;
+import com.order.track.adapter.model.RequestForCancellationDto;
+import com.order.track.adapter.model.StatusCode;
+import com.order.track.adapter.model.UpdateOrderRequestDto;
 import com.order.track.adapter.service.OrderService;
 
 @RestController
@@ -28,110 +34,121 @@ public class OrderController {
 	private OrderService orderService;
 	
 	@PostMapping(AppConstant.PLACE_ORDER)
-	ResponseEntity<OrderDTO> placeOrder(@RequestParam OrderDTO order){
+	GenericResponse<OrderDTO> placeOrder(@RequestBody OrderDTO order){
 		try {
-			return new ResponseEntity<>(orderService.placeOrder(order), HttpStatus.OK);
+			return new GenericResponse<>("Order Placed successfully!!", StatusCode.of(HttpStatus.OK), orderService.placeOrder(order) );
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.GET_ORDER_BY_ID)
-	ResponseEntity<OrderDTO> getOrderById(@PathVariable UUID order_id){
+	GenericResponse<OrderDTO> getOrderById(@PathVariable UUID order_id){
 		try {
-			return new ResponseEntity<>(orderService.getOrderById(order_id), HttpStatus.OK);
+			return new GenericResponse<>("Order details fetched successfully!!", StatusCode.of(HttpStatus.OK), orderService.getOrderById(order_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.GET_ORDER_BY_CUSTOMER_ID)
-	ResponseEntity<OrderDTO> getOrderByCustomerId(@PathVariable UUID Customer_id){
+	GenericResponse<OrderDTO> getOrderByCustomerId(@PathVariable UUID customer_id){
 		try {
-			return new ResponseEntity<>(orderService.getOrderByCustomerId(Customer_id), HttpStatus.OK);
+			return new GenericResponse<>("Order details fetched successfully!!",StatusCode.of(HttpStatus.OK), orderService.getOrderByCustomerId(customer_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.GET_ORDER_BY_RESTAURANT_ID)
-	ResponseEntity<OrderDTO> getOrderByRestaurant(@PathVariable UUID restaurant_id){
+	GenericResponse<OrderDTO> getOrderByRestaurant(@PathVariable UUID restaurant_id){
 		try {
-			return new ResponseEntity<>(orderService.getOrderByRestaurantId(restaurant_id), HttpStatus.OK);
+			return new GenericResponse<>("Order details fetched successfully!!",StatusCode.of(HttpStatus.OK), orderService.getOrderByRestaurantId(restaurant_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstant.UPDATE_ORDER_STATUS)
-	ResponseEntity<OrderDTO> updateOrderStatus(@RequestParam UUID restaurant, @RequestParam UUID order_id,@RequestParam OrderStatus status){
+	GenericResponse<OrderDTO> updateOrderStatus(@RequestBody UpdateOrderRequestDto request){
 		try {
-			return new ResponseEntity<>(orderService.updateOrderStatus(restaurant, order_id, status), HttpStatus.OK);
+			return new GenericResponse<>("Order status has been updated successfully!!",StatusCode.of(HttpStatus.OK), orderService.updateOrderStatus(request.getRestaurant_id(), request.getOrder_id(), request.getStatus()));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstant.CANCEL_ORDER)
-	ResponseEntity<?> cancelOrder(@RequestParam UUID restaurant_id,@RequestParam UUID admin_id,@RequestParam UUID order_id){
+	GenericResponse<?> cancelOrder(@RequestBody CancelOrderRequestDto request){
 		try {
-			boolean result = orderService.cancelOrder(restaurant_id, admin_id, order_id);
+			boolean result = orderService.cancelOrder(request.getRestaurant_id(), request.getAdmin_id(), request.getOrder_id());
 			if(result==false) {
-				return new ResponseEntity<>("The order is unable to cancel right now!!", HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The order is unable to cancel right now!!", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
-			return new ResponseEntity<>("The order has been cancel successfully", HttpStatus.OK);
+			return new GenericResponse<>("The order has been cancel successfully", StatusCode.of(HttpStatus.OK), null);
 		} catch (Exception e) {
-			return new ResponseEntity<>("The cancelOrder service is unable to run effeciently", HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@PutMapping(AppConstant.REQUEST_FOR_CANCELLATION_OF_ORDER)
-	ResponseEntity<String> requestForCancellation(@RequestParam UUID customer_id ,@RequestParam UUID order_id){
+	GenericResponse<String> requestForCancellation(@RequestBody RequestForCancellationDto request){
 		try {
-			boolean result = orderService.requestCancellationOfOrder(customer_id, order_id);
+			boolean result = orderService.requestCancellationOfOrder(request.getCustomer_id(), request.getOrder_id());
 			if(result==false) {
-				return new ResponseEntity<>("The request for cancellation has not been send successfully", HttpStatus.BAD_REQUEST);
+				return new GenericResponse<>("The request for cancellation has not been send successfully", StatusCode.of(HttpStatus.BAD_REQUEST), null);
 			}
-			return new ResponseEntity<>("Your request for cancellation of order has been send succesffuly. We will update you.", HttpStatus.OK);
+			return new GenericResponse<>("Your request for cancellation of order has been send succesffuly. We will update you.", StatusCode.of(HttpStatus.OK), null);
 		} catch (Exception e) {
-			return new ResponseEntity<>("The requestForCancellation service is unable to run effeciently", HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.TRACK_YOUR_ORDER)
-	ResponseEntity<String> trackOrder(@PathVariable UUID order_id){
+	GenericResponse<String> trackOrder(@PathVariable UUID order_id){
 		try {
-			return new ResponseEntity<>(orderService.trackOrder(order_id), HttpStatus.OK);
+			return new GenericResponse<>("Track Order fetched succssfully!!",StatusCode.of(HttpStatus.OK), orderService.trackOrder(order_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>("The trackOrder service is not running and has some error occur!!", HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
-	@PostMapping(AppConstant.ORDER_SUMMARY)
-	ResponseEntity<OrderSummaryDTO> orderSummary(@RequestParam OrderDTO order){
+	@GetMapping(AppConstant.ORDER_SUMMARY)
+	GenericResponse<OrderSummaryDTO> orderSummary(@RequestParam UUID order_id){
 		try {
-			return new ResponseEntity<>(orderService.orderSummary(order), HttpStatus.OK);
+			return new GenericResponse<>("Order summary fetched successfully!!",StatusCode.of(HttpStatus.OK), orderService.orderSummary(order_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	@GetMapping(AppConstant.GET_COUNT_OF_ORDER_BY_CUSTOMER_ID)
-	ResponseEntity<CountOrderResponse> countOrderByCustomerId(@PathVariable UUID customer_id){
+	GenericResponse<CountOrderResponse> countOrderByCustomerId(@PathVariable UUID customer_id){
 		try {
-			return new ResponseEntity<>(orderService.countOrderByCustomerId(customer_id),HttpStatus.OK);
+			return new GenericResponse<>("Fetched count for order by customer id successfully!!",StatusCode.of(HttpStatus.OK), orderService.countOrderByCustomerId(customer_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 	
 	
 	@GetMapping(AppConstant.GET_COUNT_OF_ORDER_BY_RESTAURANT_ID)
-	ResponseEntity<CountOrderResponse> countOrderByRestaurantId(@PathVariable UUID restaurant_id){
+	GenericResponse<CountOrderResponse> countOrderByRestaurantId(@PathVariable UUID restaurant_id){
 		try {
-			return new ResponseEntity<>(orderService.countOrderByRestaurantId(restaurant_id),HttpStatus.OK);
+			return new GenericResponse<>("Fetched count for order by restaurant id successfully!!",StatusCode.of(HttpStatus.OK),  orderService.countOrderByRestaurantId(restaurant_id));
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}
 	}
 }

@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.order.track.adapter.constant.AppConstant;
 
 import jakarta.persistence.Entity;
@@ -35,6 +36,7 @@ public class OrderItem {
 	
 	@ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+	@JsonBackReference
 	private Order order;
 	
 	private UUID foodItemId;
