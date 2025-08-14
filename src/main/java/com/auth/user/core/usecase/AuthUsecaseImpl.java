@@ -53,6 +53,7 @@ public class AuthUsecaseImpl implements AuthUsecase{
 		payload.setLocation(user.getLocation());
 		payload.setDevice_id(user.getDevice_id());
 		payload.setProfileImageUrl(user.getProfileImageUrl());
+		payload.setRole(user.getRole());
 		payload.setActive(true);
 		payload.setVerified(true);
 		
