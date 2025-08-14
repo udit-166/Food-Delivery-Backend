@@ -1,5 +1,6 @@
 package com.order.track.adapter.respository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,4 +22,6 @@ public interface OrderRepository {
     Integer countByRestaurantId(UUID restaurantId);
     
     List<Order> findByStatus(OrderStatus status);
+    
+    Order findDeliveredOrderRecentIfAny(UUID customerId,OrderStatus status,LocalDateTime afterDateTime);
 }

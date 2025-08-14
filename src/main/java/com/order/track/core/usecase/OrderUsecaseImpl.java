@@ -1,17 +1,21 @@
 package com.order.track.core.usecase;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.order.track.adapter.model.HandleNotificationRequest;
 import com.order.track.adapter.model.OrderStatus;
+import com.order.track.adapter.model.OrderStatusUpdateEvent;
 import com.order.track.adapter.model.OrderSummaryDTO;
+import com.order.track.adapter.model.ReviewPendingResponse;
 import com.order.track.adapter.respository.OrderRepository;
 import com.order.track.core.entity.Order;
 import com.order.track.core.entity.OrderItem;
@@ -50,6 +54,8 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		
 		order.setItems(processedItems);
 		order.setTotalPrice(total);
+		order.setRating_done(false);
+		order.setOrder_place_date(LocalDateTime.now());
 		Order result = orderRepository.save(order);
 		
 //		HandleNotificationRequest request = new HandleNotificationRequest();
@@ -100,17 +106,17 @@ public class OrderUsecaseImpl implements OrderUsecase{
 		
 		 String topic = "";
 		    switch (status) {
-		        case PLACED:
-		            topic = "handle_order_placed";
-		            break;
 		        case DISPATCHED:
 		            topic = "handle_order_dispatched";
+		            orderToUpdate.setOrder_dispatched_date(LocalDateTime.now());
 		            break;
 		        case ASSIGNED_TO_DELIVERY:
 		            topic = "handle_order_assigned_to_delivery_person";
+		            orderToUpdate.setDelivery_person_assign_date(LocalDateTime.now());
 		            break;
 		        case DELIVERED:
 		            topic = "handle_order_delivered";
+		            orderToUpdate.setOrder_delivery_date(LocalDateTime.now());
 		            break;
 		        default:
 		            System.out.println("Unknown status: No notification sent.");
@@ -133,6 +139,7 @@ public class OrderUsecaseImpl implements OrderUsecase{
 			return false;
 		}
 		orderToCancell.setStatus(OrderStatus.CANCELLED); 
+		orderToCancell.setOrder_cancel_date(LocalDateTime.now());
 		orderRepository.save(orderToCancell);
 		
 
@@ -231,6 +238,59 @@ public class OrderUsecaseImpl implements OrderUsecase{
 	public Integer countOrderByRestaurantId(UUID restaurant_id) {
 		
 		return orderRepository.countByRestaurantId(restaurant_id);
+	}
+
+	@Override
+	@KafkaListener(topics = "update-order-details", groupId = "notification-group", containerFactory = "kafkaListenerContainerFactory")
+	public void updateOrderRatingDetails(UUID orderId) {
+		
+		Order orderDetails = orderRepository.findById(orderId);
+		
+		if(orderDetails==null) {
+			System.out.println("No order found with this order id");
+		}
+		
+		orderDetails.setRating_done(true);
+		
+		orderRepository.save(orderDetails);
+		System.out.println("Order marked as rating done!!");
+	}
+
+	@Override
+	public ReviewPendingResponse getLastFiveDaysReviewPending(UUID customerId) {
+		
+		LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
+		
+		System.out.println("The data is>>>>"+fiveDaysAgo);
+		
+		Order order = orderRepository.findDeliveredOrderRecentIfAny(customerId, OrderStatus.DELIVERED, fiveDaysAgo);
+		
+		
+		
+		if(order==null) {
+			System.out.println("No order found with pending review");
+		}
+		
+		System.out.println("The data is>>>>"+order.getRating_done());
+		
+		if(!order.getRating_done() || order.getRating_done() == null) {
+			ReviewPendingResponse res = new ReviewPendingResponse();
+			
+			res.setOrderId(order.getId());
+			res.setRestaurantId(order.getRestaurantId());
+			
+			return res;
+		}
+		
+		return null;
+	}
+
+	@Override
+	@KafkaListener(topics = "order-status-update", groupId = "notification-group", containerFactory = "KafkaListnerForUpdateOrderStatus")
+	public void listenOrderStatusUpdate(OrderStatusUpdateEvent event) {
+		System.out.println("The update Order called");
+		updateOrderStatus(event.getRestaurantId(), event.getOrderId(), event.getStatus());
+		
 	}
 
 }

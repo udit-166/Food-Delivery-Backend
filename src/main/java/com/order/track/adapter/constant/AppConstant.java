@@ -58,4 +58,6 @@ public class AppConstant {
 	public static final String RETRY_PAYMENT = "/retry_payment";
 	
 	public static final int PAYMENT_TIMEOUT_MINUTES = 15;
+	
+	public static final String GET_PENDING_REVIEW_REQUEST = "/get_pending_request/{customer_id}";
 }

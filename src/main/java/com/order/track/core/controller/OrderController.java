@@ -22,6 +22,7 @@ import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.OrderStatus;
 import com.order.track.adapter.model.OrderSummaryDTO;
 import com.order.track.adapter.model.RequestForCancellationDto;
+import com.order.track.adapter.model.ReviewPendingResponse;
 import com.order.track.adapter.model.StatusCode;
 import com.order.track.adapter.model.UpdateOrderRequestDto;
 import com.order.track.adapter.service.OrderService;
@@ -146,6 +147,17 @@ public class OrderController {
 	GenericResponse<CountOrderResponse> countOrderByRestaurantId(@PathVariable UUID restaurant_id){
 		try {
 			return new GenericResponse<>("Fetched count for order by restaurant id successfully!!",StatusCode.of(HttpStatus.OK),  orderService.countOrderByRestaurantId(restaurant_id));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
+		}
+	}
+	
+	@GetMapping(AppConstant.GET_PENDING_REVIEW_REQUEST)
+	GenericResponse<ReviewPendingResponse> pendingReview(@PathVariable UUID customer_id){
+		try {
+			ReviewPendingResponse result = orderService.getLastFiveDaysReviewPending(customer_id);
+			return new GenericResponse<>("Pending review for an order fetched successfully!!", StatusCode.of(HttpStatus.OK), result);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new GenericResponse<>("Something went wrong!!",StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);

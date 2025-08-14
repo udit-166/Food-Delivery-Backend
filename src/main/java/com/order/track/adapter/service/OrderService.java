@@ -5,6 +5,7 @@ import com.order.track.adapter.model.CountOrderResponse;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.OrderStatus;
 import com.order.track.adapter.model.OrderSummaryDTO;
+import com.order.track.adapter.model.ReviewPendingResponse;
 
 public interface OrderService {
 
@@ -29,5 +30,7 @@ public interface OrderService {
 	public CountOrderResponse countOrderByCustomerId(UUID customer_id);
 	
 	public CountOrderResponse countOrderByRestaurantId(UUID restaurant_id);
+	
+	public ReviewPendingResponse getLastFiveDaysReviewPending(UUID customerId);
 	
 }

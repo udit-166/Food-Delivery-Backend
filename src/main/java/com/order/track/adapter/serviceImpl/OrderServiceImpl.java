@@ -8,6 +8,7 @@ import com.order.track.adapter.model.CountOrderResponse;
 import com.order.track.adapter.model.OrderDTO;
 import com.order.track.adapter.model.OrderStatus;
 import com.order.track.adapter.model.OrderSummaryDTO;
+import com.order.track.adapter.model.ReviewPendingResponse;
 import com.order.track.adapter.service.OrderService;
 import com.order.track.core.entity.Order;
 import com.order.track.core.usecase.OrderUsecase;
@@ -94,6 +95,11 @@ public class OrderServiceImpl implements OrderService{
 		CountOrderResponse count = new CountOrderResponse();
 		count.setCount(orderCount);
 		return count;
+	}
+
+	@Override
+	public ReviewPendingResponse getLastFiveDaysReviewPending(UUID customerId) {
+		return orderUsecase.getLastFiveDaysReviewPending(customerId);
 	}
 
 	

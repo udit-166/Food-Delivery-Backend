@@ -1,5 +1,6 @@
 package com.order.track.adapter.respository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,6 +61,19 @@ public class OrderRepositoryImpl implements OrderRepository{
 	public List<Order> findByStatus(OrderStatus status) {
 		
 		return orderRepositories.findByStatus(status);
+	}
+
+	@Override
+	public Order findDeliveredOrderRecentIfAny(UUID customerId, OrderStatus status, LocalDateTime afterDateTime) {
+		Optional<Order> orders = orderRepositories.findTopByCustomerIdAndStatusAndUpdatedAtAfterOrderByUpdatedAtDesc(customerId, status, afterDateTime);
+		
+		if(orders.isEmpty()) {
+			return null;
+		}
+		
+		Order order = orders.get();
+		
+		return order;
 	}
 
 }

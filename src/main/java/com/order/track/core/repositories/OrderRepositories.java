@@ -1,6 +1,8 @@
 package com.order.track.core.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +21,6 @@ public interface OrderRepositories extends JpaRepository<Order, UUID>{
 	int countByCustomerId(UUID customerId);
 
     int countByRestaurantId(UUID restaurantId);
+    
+    Optional<Order> findTopByCustomerIdAndStatusAndUpdatedAtAfterOrderByUpdatedAtDesc(UUID customerId,OrderStatus status,LocalDateTime afterDateTime);
 }

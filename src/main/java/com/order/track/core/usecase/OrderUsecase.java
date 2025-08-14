@@ -3,7 +3,9 @@ package com.order.track.core.usecase;
 import java.util.UUID;
 
 import com.order.track.adapter.model.OrderStatus;
+import com.order.track.adapter.model.OrderStatusUpdateEvent;
 import com.order.track.adapter.model.OrderSummaryDTO;
+import com.order.track.adapter.model.ReviewPendingResponse;
 import com.order.track.core.entity.Order;
 
 public interface OrderUsecase {
@@ -29,4 +31,10 @@ public interface OrderUsecase {
 	public Integer countOrderByCustomerId(UUID customer_id);
 	
 	public Integer countOrderByRestaurantId(UUID restaurant_id);
+	
+	public void updateOrderRatingDetails(UUID orderId);
+	
+	public ReviewPendingResponse getLastFiveDaysReviewPending(UUID customerId);
+	
+	public void listenOrderStatusUpdate(OrderStatusUpdateEvent event);
 }

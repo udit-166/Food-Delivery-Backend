@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.order.track.adapter.constant.AppConstant;
 import com.order.track.adapter.model.OrderStatus;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,11 +46,25 @@ public class Order {
 	
 	private Boolean isActive;
 	
+	private Boolean rating_done;
+	
+	private LocalDateTime order_place_date;
+	
+	private LocalDateTime order_dispatched_date;
+	
+	private LocalDateTime delivery_person_assign_date;
+	
+	private LocalDateTime order_delivery_date;
+	
+	private LocalDateTime order_cancel_date;
+	
+	private LocalDateTime out_for_delivery_date;
+	
 	@CreationTimestamp
 	private LocalDateTime create_at;
 	
-	@UpdateTimestamp
-	private LocalDateTime updated_at;
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
