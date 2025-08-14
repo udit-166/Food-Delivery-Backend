@@ -1,57 +1,66 @@
 # 🛒 Order Microservice - Food Delivery App
 
-This microservice is responsible for managing **orders**, **order items**, and **payment status tracking** in the Food Delivery App. It handles order creation, linking with restaurants and customers, and scheduled background tasks like auto-cancelling unpaid orders.
+This microservice is responsible for managing **orders**, **order items**, **payment processing**, and **tracking payment/order statuses**.  
+It connects with **Restaurant Service**, **Auth Service**, and **Payment Gateway (Razorpay)** to provide a complete order lifecycle.
 
 ---
 
 ## 📦 Core Features
 
-- ✅ Create and fetch customer orders
-- ✅ Track payment status linked to orders
-- ✅ Auto-cancel unpaid orders after a timeout
-- ✅ Maintain order status: `PENDING`, `CONFIRMED`, `CANCELLED`, `DELIVERED`
-- ✅ Cascade relationship with OrderItems and Payments
-- ✅ Scheduled job for auto-cancellation using Spring Scheduler
+- ✅ Place and fetch customer orders
+- ✅ Link orders with restaurants and customers
+- ✅ Track order status: `PENDING`, `CONFIRMED`, `CANCELLED`, `DELIVERED`
+- ✅ Track payment status: `PENDING`, `SUCCESS`, `FAILED`, `EXPIRED`
+- ✅ Auto-cancel unpaid orders after a timeout (default 15 minutes)
+- ✅ Request for order cancellation from customers
+- ✅ Pending review tracking
+- ✅ Generate order summary
+- ✅ Payment retry and refund handling
+- ✅ Calculate total earnings for restaurants
 
 ---
 
 ## 📁 Tech Stack
 
-- **Java 17**, **Spring Boot 4**
-- **JPA / Hibernate**
+- **Java 17**, **Spring Boot**
+- **Spring Data JPA / Hibernate**
 - **PostgreSQL**
 - **Lombok**, **Jakarta Persistence**
 - **Spring Scheduler**
 - **Redis**
-- **Mapper**
-- **Razorpay**
+- **Razorpay Integration**
+- **Model Mapper**
 
 ---
 
-## 📑 Entities (Some Of Them Are)
+## 📑 Entities (Some of Them)
 
 ### 🧾 Order
-- `UUID id`
-- `UUID customerId` (from Auth Service)
-- `UUID restaurantId` (from Restaurant Service)
-- `OrderStatus status`
-- `BigDecimal totalPrice`
-- `Boolean isActive`
-- `LocalDateTime create_at`
-- `LocalDateTime updated_at`
-- `List<OrderItem> items`
-- `List<Payment> payments`
+```java
+UUID id;
+UUID customerId;
+UUID restaurantId;
+OrderStatus status;
+BigDecimal totalPrice;
+Boolean isActive;
+LocalDateTime created_at;
+LocalDateTime updated_at;
+List<OrderItem> items;
+List<Payment> payments;
+```
 
 ### 💸 Payment
-- `UUID id`
-- `order`
-- `razorpayOrderId`
-- `razorpayPaymentId`
-- `razorpaySignature`
-- `amount`
-- `currency`
-- `PaymentStatus status` (`PENDING`, `SUCCESS`, `FAILED`, `EXPIRED`)
-- `LocalDateTime create_at`
+```java
+UUID id;
+Order order;
+String razorpayOrderId;
+String razorpayPaymentId;
+String razorpaySignature;
+BigDecimal amount;
+String currency;
+PaymentStatus status; // PENDING, SUCCESS, FAILED, EXPIRED
+LocalDateTime created_at;
+```
 
 ---
 
@@ -59,33 +68,67 @@ This microservice is responsible for managing **orders**, **order items**, and *
 
 ### ⏱ AutoCancelOrderScheduler
 Runs every **5 minutes** to:
-- Find all orders with status `PENDING`
-- Check for any pending payments that exceeded the timeout (default 15 minutes)
-- If so:
-  - Cancel the order (`OrderStatus.CANCELLED`)
-  - Mark the payment as `EXPIRED`
+- Identify all `PENDING` orders
+- If payment is not completed within **15 minutes**, the order is cancelled and payment marked as `EXPIRED`
 
 ---
 
-## 🔗 API Endpoints (Few Of Them Are)
+## 🔗 API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/orders` | `POST` | Create a new order |
-| `/api/orders/{id}` | `GET` | Get order by ID |
-| `/api/orders/customer/{customerId}` | `GET` | Get all orders for a customer |
-| `/api/orders/restaurant/{restaurantId}` | `GET` | Get all orders for a restaurant |
-| `/api/orders/{orderId}/status` | `PATCH` | Update order status |
-| `/api/payments/order/{orderId}` | `GET` | Get all payments for a given order |
+### 📌 Order APIs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/orders/place` | Place a new order |
+| `GET` | `/api/orders/{order_id}` | Get order by ID |
+| `GET` | `/api/orders/customer/{customer_id}` | Get orders by customer ID |
+| `GET` | `/api/orders/restaurant/{restaurant_id}` | Get orders by restaurant ID |
+| `PUT` | `/api/orders/status` | Update order status |
+| `PUT` | `/api/orders/cancel` | Cancel an order (Admin/Restaurant) |
+| `PUT` | `/api/orders/request-cancellation` | Request order cancellation (Customer) |
+| `GET` | `/api/orders/track/{order_id}` | Track order |
+| `GET` | `/api/orders/summary?order_id={order_id}` | Get order summary |
+| `GET` | `/api/orders/count/customer/{customer_id}` | Count orders for a customer |
+| `GET` | `/api/orders/count/restaurant/{restaurant_id}` | Count orders for a restaurant |
+| `GET` | `/api/orders/pending-review/{customer_id}` | Get pending reviews for customer orders |
 
 ---
 
-## 📌 Constants (Some Of Them Are)
+### 💳 Payment APIs
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/payments/initiate` | Initiate payment for an order |
+| `PUT` | `/api/payments/verify` | Verify payment (Razorpay callback) |
+| `PUT` | `/api/payments/refund?payment_id={payment_id}` | Refund payment |
+| `GET` | `/api/payments/order/{order_id}` | Get all payments for an order |
+| `GET` | `/api/payments/success/{order_id}` | Get successful payments for an order |
+| `GET` | `/api/payments/status/{status}` | Get payments by status |
+| `GET` | `/api/payments/total-earning/{restaurant_id}` | Get total earnings for a restaurant |
+| `POST` | `/api/payments/retry?order_id={order_id}` | Retry payment for an order |
 
+---
+
+## ⚙️ Constants
 ```java
-// AppConstant.java
 public static final int PAYMENT_TIMEOUT_MINUTES = 15;
 public static final String ORDER_ENTITY = "orders";
 public static final String ORDER_ITEM_ENTITY = "order_item";
 public static final String ORDER_HISTORY = "order_history";
 public static final String PAYMENT = "payments";
+```
+
+---
+
+## 📌 How to Use in Postman
+1. Import the API collection into Postman.
+2. Set up environment variables for:
+   - `base_url`
+   - `customer_id`
+   - `restaurant_id`
+   - `order_id`
+3. Ensure Auth Service and Restaurant Service are running for dependent APIs.
+4. Test using the sequence:
+   - Place Order → Initiate Payment → Verify Payment → Track Order → Order Summary.
+
+---
+
+**Made with ❤️ for a seamless food delivery experience.**
