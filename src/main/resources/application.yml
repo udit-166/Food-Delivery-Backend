@@ -13,10 +13,10 @@ spring:
 
   data:
     redis:
-      host: redis-12716.c13.us-east-1-3.ec2.redns.redis-cloud.com
-      port: 12716
+      host: redis-327134.c13.us-east-1-3.ec2.redns.redis-cloud.com
+      port: 327134
       username: default
-      password: 9VZ3R9COaiFYZGTwXiLDIfx1jZ0fiCPd
+      password: 9VZ3R9COaiFYZGTwXiLDIfx1jZ0fiCPqw
   application:
     name: AUTH-SERVICE
 server:
