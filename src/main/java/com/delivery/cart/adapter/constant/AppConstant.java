@@ -24,7 +24,7 @@ public class AppConstant {
 	
 	public static final String REGISTER_VEHICLE = "/register_vehicle";
 	
-	public static final String GOOGLE_MAP_API_KEY = "AIzaSyCRhyWhEvsK7tTUqjxG7s9kHcACPw8cBdg";
+	public static final String GOOGLE_MAP_API_KEY = "";
 	
 	public static final int INITIAL_RADIUS_KM = 3;
 	
