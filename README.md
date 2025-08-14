@@ -59,14 +59,14 @@ mvn spring-boot:run
 
 | Service | Branch | Port | Description |
 |---------|--------|------|-------------|
-| Auth Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/auth-service) | 7080 | Auth, JWT, Google OAuth, OTP, Address Book |
-| Restaurant Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/restaurant-service) | 7081 | Restaurant/Category/Food CRUD & Search |
-| Order Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/order-service) | 7082 | Orders, Payments, Ratings, Kafka Listeners |
-| Cart & Delivery | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/delivery-and-cart-service) | 7084 | Cart Ops, Delivery Partner Assignment, Redis Lock |
-| Notification Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/notification-service) | 7085 | Email, SMS, Push Notifications |
+| Auth Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/auth-service) | 8090 | Auth, JWT, Google OAuth, OTP, Address Book |
+| Restaurant Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/restaurant-service) | 8091 | Restaurant/Category/Food CRUD & Search |
+| Order Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/order-service) | 8092 | Orders, Payments, Ratings, Kafka Listeners |
+| Cart & Delivery | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/delivery-and-cart-service) | 8094 | Cart Ops, Delivery Partner Assignment, Redis Lock |
+| Notification Service | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/notification-service) | 8093 | Email, SMS, Push Notifications |
 | API Gateway | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/service-api-gateway) | 7083 | Central Routing & JWT Validation |
-| Service Registry | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/service-registration) | 8761 | Eureka Service Discovery |
-| Config Server | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/service-config) | 8888 | Central Config Management |
+| Service Registry | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/service-registration) | 7084 | Eureka Service Discovery |
+| Config Server | [Link](https://github.com/udit-166/Food-Delivery-Backend/tree/service-config) | 7085 | Central Config Management |
 
 ---
 ## 📦 Microservices & Responsibilities
