@@ -10,7 +10,16 @@ spring:
       password: 9VZ3R9COaiFYZGTwXiLDIfx1jZ0fiCPd
   application:
     name: DELIVERY-AND-CART-SERVICE
-
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/delivery_and_cart_service
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: Tuktuk@123
 eureka:
   instance:
     prefer-ip-address: true
