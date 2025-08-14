@@ -40,37 +40,34 @@ The **Auth Service** is a Spring Boot microservice responsible for handling user
 
 ---
 
-## 📂 Key Endpoints
-
 ## 📌 Auth Service APIs
 
-| Endpoint                  | Method | Description                       |
-|--------------------------|--------|-----------------------------------|
-| `/auth/login`            | POST   | Login via phone number or Google |
-| `/auth/register`         | POST   | Register a new user              |
-| `/auth/send-otp`         | POST   | Send OTP to phone number         |
-| `/auth/verify-otp`       | POST   | Verify the received OTP          |
-| `/auth/refresh-token`    | POST   | Generate a new JWT token         |
+| Endpoint                       | Method | Description                                      |
+|--------------------------------|--------|--------------------------------------------------|
+| `/auth/login`                  | POST   | Login via phone number or Google                 |
+| `/auth/register-user`          | POST   | Register a new user                              |
+| `/auth/refresh-token`          | POST   | Generate a new JWT token                         |
+| `/auth/send-otp/{phone_number}`| GET    | Send OTP to phone number                         |
+| `/auth/verify-otp`             | POST   | Verify the received OTP                          |
 
 ---
 
 ## 👤 User Service APIs
 
-| Endpoint                        | Method | Description                              |
-|--------------------------------|--------|------------------------------------------|
-| `/user/find`                   | GET    | Find user by phone or email              |
-| `/user/update-profile`         | PUT    | Update user profile                      |
-| `/user/role`                   | GET    | Get user's role                          |
-| `/user/address/current`        | GET    | Get current address based on location    |
-| `/user/address/all`            | GET    | Get all addresses of the user            |
-| `/user/address/save`           | POST   | Save a new address                       |
-| `/user/address/update`         | PUT    | Update an existing address               |
-| `/user/metadata/update`        | PUT    | Update app metadata (version, device ID) |
-| `/user/deactivate`             | PUT    | Deactivate a user account                |
+| Endpoint                                | Method | Description                                         |
+|-----------------------------------------|--------|-----------------------------------------------------|
+| `/user/get-profile/phone/{phone_number}`| GET    | Get user profile by phone number                    |
+| `/user/get-profile/email/{email}`       | GET    | Get user profile by email                           |
+| `/user/update-profile`                  | PUT    | Update user profile                                 |
+| `/user/role`                            | GET    | Get user's role                                     |
+| `/user/address/current`                 | POST   | Get current address based on location               |
+| `/user/address/all`                     | GET    | Get all addresses of the user                       |
+| `/user/address/save`                    | POST   | Save a new address                                  |
+| `/user/address/update`                  | PUT    | Update an existing address                          |
+| `/user/metadata/update`                 | PUT    | Update app metadata (version, device ID, FCM token) |
+| `/user/deactivate`                      | DELETE | Deactivate a user account                           |
 
-> **Note:** All endpoints follow a clear separation between authentication and user profile operations.
-
-> 🔐 All secured endpoints require JWT in `Authorization` header.
+> **Note:** All secured endpoints require JWT in `Authorization` header.
 
 ---
 
