@@ -1,6 +1,6 @@
 # 🍽️ Restaurant Service - Food Delivery App
 
-This microservice is responsible for managing restaurant data and food items in a scalable food delivery system.
+This microservice is responsible for managing **restaurants**, **categories**, and **food items** in a scalable food delivery system.
 
 ---
 
@@ -35,56 +35,87 @@ restaurant-service
 
 ## ⚙️ Features
 
-- 🏪 **Restaurant Management**: Add, update, and retrieve restaurant information.
-- 🍔 **Food Item Management**: Add and list food items under restaurants.
-- 🔄 **Auto Create/Update Restaurant**: If a food item is added and the restaurant doesn't exist, it creates one and updates the average rating accordingly.
-- 🧠 **Smart Search API**:
+- 🏪 **Restaurant Management**: CRUD operations for restaurants (add, update, retrieve, delete).
+- 🍔 **Food Item Management**: CRUD for food items, linked with categories and restaurants.
+- 📂 **Category Management**: Create and update categories for food items.
+- ⭐ **Ratings System**: Submit and fetch food ratings.
+- 🔎 **Smart Search API**:
   - Search by **restaurant name**, **food name**, or **category**.
-  - If match is a **restaurant** → returns restaurant + food items.
-  - If match is a **food or category** → returns list of matching food items.
-- ⚡ **Redis Caching**: Caches restaurant menu (grouped by category) for 15 minutes after first access.
+  - Restaurant match → returns restaurant + menu.
+  - Food/Category match → returns list of matching food items.
+- ⚡ **Redis Caching**: Menu (grouped by category) is cached for 15 minutes after first access.
+- 🧠 **Fallback Search**: If no match in restaurant, fallback to category → food search.
+
+---
+
+## 📌 API Endpoints
+
+### **Category APIs**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/categories` | Create a new category |
+| `PUT` | `/categories/{id}` | Update category details |
+
+---
+
+### **Food Item APIs**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/food` | Add a new food item |
+| `GET` | `/food` | Get all food items |
+| `GET` | `/food/restaurant/{restaurantId}` | Get all food items of a restaurant |
+| `GET` | `/food/category/{categoryId}` | Get all food items of a category |
+| `GET` | `/food/{id}` | Get a specific food item by ID |
+| `PUT` | `/food/{id}` | Update a food item |
+| `DELETE` | `/food/{id}` | Delete a food item |
+| `POST` | `/food/{id}/rating` | Submit food rating |
+
+---
+
+### **Restaurant APIs**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/restaurants` | Create a new restaurant |
+| `GET` | `/restaurants` | Get all restaurants |
+| `PUT` | `/restaurants/{id}` | Update restaurant details |
+| `DELETE` | `/restaurants/{id}` | Delete a restaurant |
+| `GET` | `/restaurants/{id}/menu` | Get menu of a restaurant |
+| `PUT` | `/restaurants/{id}/status` | Open or close a restaurant |
+| `GET` | `/restaurants/search?query=` | Search for restaurants/food |
 
 ---
 
 ## 🔗 External Integrations
 
-- 🔐 **auth-service**: To validate and manage user roles such as `RESTAURANT_OWNER`.
-- 🧑‍🍳 **User Linking**: Each restaurant is linked to a user (restaurant owner) via:
-  - `restaurant_email`
-  - `customer_care_number`
-  - `opening_time`
-  - `closing_time`
+- **Auth-Service** → Validates restaurant owner role (`RESTAURANT_OWNER`)
+- **Order-Service** → Uses menu and pricing for order validation
+- **Cart & Delivery Service** → Uses restaurant location for delivery assignment
 
 ---
 
 ## 🧪 Tech Stack
 
-- 🧬 Java 17
-- ☕ Spring Boot
-- 🧠 Spring Data JPA
-- 🔁 Spring Cloud OpenFeign
-- 🗃️ PostgreSQL (Main DB)
-- 🚀 Redis (Caching)
-- 🐳 Docker
+- **Java 17**
+- **Spring Boot**
+- **Spring Data JPA**
+- **Spring Cloud OpenFeign**
+- **PostgreSQL** (main DB)
+- **Redis** (caching)
+- **Docker**
 
 ---
 
-## 🚀 Getting Started (Optional)
-
-Coming soon! Let me know if you'd like a setup and run guide here.
-
+## 📌 Notes
+- Menu responses are cached for **15 minutes** to optimize performance.
+- Smart search provides **fallback** from restaurant → category → food.
 ---
+## ⚙️ Run Locally
 
-## 📌 Contributing
+**Pre-reqs:** Java 17+, Redis, PostgreSQL, Kafka 
+**Steps:**
+```bash
+git clone https://github.com/your-username/Food-Delivery-Backend.git
+cd Food-Delivery-Backend && git checkout auth-service
+# Update application.yml for DB & Redis configs
+./mvnw spring-boot:run
 
-Feel free to open issues and contribute PRs to improve this service!
-
----
-
-## 📧 Contact
-
-For any questions or suggestions, feel free to reach out!
-
----
-
-**Made with ❤️ for fast and scalable food delivery systems.**
