@@ -2,6 +2,7 @@ package com.food.restaurant.core.usecase;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.restaurant.adapter.model.FcmNotification;
+import com.food.restaurant.adapter.model.SubmitFoodRatingRequest;
 import com.food.restaurant.adapter.repository.FoodItemRepositories;
 import com.food.restaurant.core.entity.FoodItem;
 
@@ -134,6 +136,25 @@ public class FoodItemUsecaseImpl implements FoodItemUsecase{
 		food.setIs_active(false);
 		foodItemRepositories.save(food);
 		
+	}
+
+	@Override
+	public Boolean submitFoodRating(SubmitFoodRatingRequest request) {
+		
+		FoodItem food = foodItemRepositories.findById(request.getFoodItemId());
+
+		double currentTotal = food.getRating() * food.getRating_person_count();
+	    double newTotal = currentTotal + request.getRating();
+	    int newCount = food.getRating_person_count() + 1;
+		
+	    double newAverage = newTotal / newCount;
+
+	    food.setRating_person_count(newCount);
+	    food.setRating(newAverage);
+
+	    foodItemRepositories.save(food);
+	    
+	    return true;
 	}
 
 }

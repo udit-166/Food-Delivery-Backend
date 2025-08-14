@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.food.restaurant.adapter.mapper.FoodItemMapper;
 import com.food.restaurant.adapter.model.FoodItemDto;
+import com.food.restaurant.adapter.model.SubmitFoodRatingRequest;
 import com.food.restaurant.adapter.service.FoodItemService;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.usecase.FoodItemUsecase;
@@ -53,6 +54,11 @@ public class FoodItemServiceImpl implements FoodItemService{
 	public void deleteFoodItem(UUID food_item_id) {
 		foodItemUsecase.deleteFoodItem(food_item_id);
 		
+	}
+
+	@Override
+	public Boolean submitFoodRating(SubmitFoodRatingRequest request) {
+		return foodItemUsecase.submitFoodRating(request);
 	}
 
 }

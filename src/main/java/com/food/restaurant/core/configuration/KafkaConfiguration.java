@@ -2,6 +2,7 @@ package com.food.restaurant.core.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -37,5 +38,24 @@ public class KafkaConfiguration {
 	@Bean
 	public KafkaTemplate<String, FcmNotification> kafkaTemplate(){
 		return new KafkaTemplate<>(producerFactory());
+	}
+	
+	@Bean
+	public ProducerFactory<String, UUID> sendUpdateToOrderDetails(){
+		try {
+			Map<String, Object> config = new HashMap<>();
+			config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+			config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+			config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+			return new DefaultKafkaProducerFactory<>(config);
+		} catch (Exception e) {
+			System.out.println("The error while configuring kafka in auth-service as producer role is: "+e);
+			return null;
+		}
+	}
+	
+	@Bean
+	public KafkaTemplate<String, UUID> template(){
+		return new KafkaTemplate<>(sendUpdateToOrderDetails());
 	}
 }

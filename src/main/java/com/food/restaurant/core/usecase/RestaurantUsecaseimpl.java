@@ -25,12 +25,14 @@ import com.food.restaurant.adapter.model.CategoryMenuDto;
 import com.food.restaurant.adapter.model.CategoryMenuResponse;
 import com.food.restaurant.adapter.model.FcmNotification;
 import com.food.restaurant.adapter.model.FoodItemDto;
+import com.food.restaurant.adapter.model.SubmitRestaurantRatingRequest;
 import com.food.restaurant.adapter.repository.CategoryRepository;
 import com.food.restaurant.adapter.repository.FoodItemRepositories;
 import com.food.restaurant.adapter.repository.RestaurantRepositories;
 import com.food.restaurant.core.entity.Categories;
 import com.food.restaurant.core.entity.FoodItem;
 import com.food.restaurant.core.entity.Restaurant;
+import com.food.restaurant.core.entity.RestaurantReviews;
 
 @Service
 public class RestaurantUsecaseimpl implements RestaurantUsecase{
@@ -52,6 +54,9 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 	
 	@Autowired
 	private KafkaTemplate<String, FcmNotification> kafkaTemplate;
+	
+	@Autowired
+	private KafkaTemplate<String, UUID> template;
 	
 	public RestaurantUsecaseimpl() {
 		
@@ -105,7 +110,7 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		notification.setTitle("");
 		notification.setBody(null);
 		
-		//kafkaTemplate.send("send-notification", notification);
+		kafkaTemplate.send("send-notification", notification);
 		return response;
 		}
 
@@ -144,7 +149,7 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		notification.setTitle("");
 		notification.setBody(null);
 		
-		//kafkaTemplate.send("send-notification", notification);
+		kafkaTemplate.send("send-notification", notification);
 		
 		return restaurantRepositories.save(updateRestaurant);
 		
@@ -225,6 +230,90 @@ public class RestaurantUsecaseimpl implements RestaurantUsecase{
 		
 		
 		return restaurantRepositories.save(restaurant);
+	}
+
+	@Override
+	public Boolean makeCloseOrOpenRestaurant(UUID restaurant_id) {
+		Optional<Restaurant> restuarant = restaurantRepositories.findById(restaurant_id);
+		
+		if(restuarant.isPresent()) {
+			Restaurant rest = restuarant.get();
+			rest.setActive_now(rest.getActive_now()== null ? true : !rest.getActive_now());
+			
+			restaurantRepositories.save(rest);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Boolean updateFoodItems(ArrayList<FoodItemDto> foodItems) {
+		if (foodItems == null || foodItems.isEmpty()) {
+	        return false;
+	    }
+		UUID restaurantId = foodItems.get(0).getRestaurantId();
+
+	    // Fetch existing food items for that restaurant
+	    List<FoodItem> existingItems = foodItemRepositories.findAllByRestaurant_Id(restaurantId);
+	    
+	    Map<UUID, FoodItem> existingItemsMap = existingItems.stream()
+	            .collect(Collectors.toMap(FoodItem::getId, fi -> fi));
+	    
+	    for (FoodItemDto dto : foodItems) {
+	        FoodItem existing = existingItemsMap.get(dto.getId());
+	        if (existing != null) {
+	            // Update only provided fields (you can add more)
+	            existing.setName(dto.getName());
+	            existing.setPrice(dto.getPrice());
+	            existing.setDescription(dto.getDescription());
+	            existing.setIs_active(dto.getIs_active());
+	        }
+	    }
+	    
+	    foodItemRepositories.saveAll(existingItems);
+	    
+	    return true;
+	    
+	    
+	}
+
+	@Override
+	public RestaurantReviews submitRating(SubmitRestaurantRatingRequest request) {
+		
+		Optional<Restaurant> restuarantAvailable = restaurantRepositories.findById(request.getRestaurant_id());
+		
+		if(restuarantAvailable.isEmpty()) {
+			return null;
+		}
+		
+		Restaurant  restaurant = restuarantAvailable.get();
+		
+		Double rating = restaurant.getAverage_rating() * restaurant.getTotal_rating();
+		
+		Double newTotalRating = request.getRating() + rating;
+		
+		int totalNumberOfRating = restaurant.getTotal_rating() + 1;
+		
+		Double newAverageRating = newTotalRating / totalNumberOfRating;
+		
+		restaurant.setAverage_rating(newAverageRating);
+		restaurant.setTotal_rating(totalNumberOfRating);
+		
+		restaurantRepositories.save(restaurant);
+		
+		RestaurantReviews review = new RestaurantReviews();
+		
+		review.setImageUrl(request.getImageUrls());
+		review.setOrder_id(request.getOrder_id());
+		review.setRating(request.getRating());
+		review.setRestaurant_id(request.getRestaurant_id());
+		review.setReviews(request.getReview());
+		
+		RestaurantReviews result = restaurantRepositories.saveReviews(review);
+		
+		template.send("update-order-details", request.getOrder_id());
+		return result;
+		
 	}
 
 

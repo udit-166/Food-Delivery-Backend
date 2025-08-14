@@ -49,4 +49,9 @@ public class FoodServiceRepositoriesImpl implements FoodItemRepositories{
 		return null;
 	}
 
+	@Override
+	public List<FoodItem> saveAll(List<FoodItem> foodItems) {
+		return foodItemRepository.saveAll(foodItems);
+	}
+
 }

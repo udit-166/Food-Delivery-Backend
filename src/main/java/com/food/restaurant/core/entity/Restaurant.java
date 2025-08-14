@@ -61,9 +61,19 @@ public class Restaurant {
 	@Column(nullable = true)
 	private String closing_time;
 	
+	
 	private UUID user_id;
 	
 	private Boolean is_active;
+	
+	private Double latitude;
+	
+	private Double Longitude;
+	
+	private String address;
+	
+	@Column (nullable = true)
+	private Boolean active_now;
 	
 	@Column(nullable = true)
 	private ArrayList<UUID> categoriesId;
@@ -73,6 +83,7 @@ public class Restaurant {
 	@Column(nullable = true)
 	@JsonManagedReference
     private List<FoodItem> foodItems;
+	
 	
 	@CreationTimestamp
 	private LocalDateTime created_at;

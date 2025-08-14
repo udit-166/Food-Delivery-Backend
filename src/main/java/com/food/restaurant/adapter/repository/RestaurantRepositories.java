@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.food.restaurant.core.entity.Restaurant;
+import com.food.restaurant.core.entity.RestaurantReviews;
 
 public interface RestaurantRepositories {
 	
@@ -15,4 +16,6 @@ public interface RestaurantRepositories {
 	List<Restaurant> getAllRestaurant();
 	
 	Optional<Restaurant> findById(UUID restaunrant_id);
+	
+	RestaurantReviews saveReviews(RestaurantReviews review);
 }

@@ -1,65 +1,50 @@
 package com.food.restaurant.core.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.food.restaurant.adapter.constant.AppConstant;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Entity
+@Table(name= AppConstant.RESTAURANT_REVIEWS_NAME)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = AppConstant.FOOD_ITEM_ENTITY)
-public class FoodItem {
+public class RestaurantReviews {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
-	private String name;
+	private UUID restaurant_id;
 	
-	private String description;
+	private int rating;
 	
-	@ManyToOne
-    @JoinColumn(name = "category_id")
-	@JsonBackReference
-	private Categories category;
+	private String reviews;
 	
-	private Integer price;
+	private UUID order_id;
 	
-	private Double rating;
-	
-	private int rating_person_count;
-	
-	private String imageUrl;
-	
-	private Boolean is_active;
-	
-	@ManyToOne
-    @JoinColumn(name = "restaurant_id")
-	@JsonBackReference
-    private Restaurant restaurant;
+	private ArrayList<String> imageUrl;
 	
 	@CreationTimestamp
 	private LocalDateTime created_at;
 	
 	@UpdateTimestamp
 	private LocalDateTime updated_at;
+	
 }

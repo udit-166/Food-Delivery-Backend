@@ -48,5 +48,13 @@ public class AppConstant {
 	
 	public static final String UPDATE_CATEGORY = "/updateCategory";
 	
+	public static final String UPDATE_ACTIVE_NOW = "/update_active_now";
 	
+	public static final String UPDATE_FOOD_ITEMS = "/update_food_items";
+	
+	public static final String SUBMIT_FOOD_RATING = "/submit_rating";
+	
+	public static final String RESTAURANT_REVIEWS_NAME = "restaurant_reviews";
+	
+	public static final String SUBMIT_RESTAURANT_RATING = "/submit_restaurant_review";
 }

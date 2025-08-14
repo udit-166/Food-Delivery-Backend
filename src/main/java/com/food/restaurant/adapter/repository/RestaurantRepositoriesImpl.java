@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.food.restaurant.core.entity.Restaurant;
+import com.food.restaurant.core.entity.RestaurantReviews;
+import com.food.restaurant.core.repository.RestaurantRatingRepository;
 import com.food.restaurant.core.repository.RestaurantRepository;
 
 @Repository
@@ -15,6 +17,9 @@ public class RestaurantRepositoriesImpl implements RestaurantRepositories{
 	
 	@Autowired
 	private RestaurantRepository restaurantRepository;
+	
+	@Autowired
+	private RestaurantRatingRepository ratingRepository;
 
 	@Override
 	public Restaurant findByName(String name) {
@@ -35,6 +40,11 @@ public class RestaurantRepositoriesImpl implements RestaurantRepositories{
 	@Override
 	public Optional<Restaurant> findById(UUID restaunrant_id) {
 		return restaurantRepository.findById(restaunrant_id);
+	}
+
+	@Override
+	public RestaurantReviews saveReviews(RestaurantReviews review) {
+		return ratingRepository.save(review);
 	}
 
 }

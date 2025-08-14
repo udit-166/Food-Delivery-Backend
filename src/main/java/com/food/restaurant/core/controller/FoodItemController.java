@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import com.food.restaurant.adapter.model.FoodItemDto;
 import com.food.restaurant.adapter.model.FoodItemResponse;
 import com.food.restaurant.adapter.model.GenericResponse;
 import com.food.restaurant.adapter.model.StatusCode;
+import com.food.restaurant.adapter.model.SubmitFoodRatingRequest;
 import com.food.restaurant.adapter.service.FoodItemService;
 import com.food.restaurant.core.entity.FoodItem;
 
@@ -121,6 +123,17 @@ public class FoodItemController {
 			foodItemService.deleteFoodItem(foodItemId);
 			return new GenericResponse<>("The data has been updated successfully",StatusCode.of(HttpStatus.OK), null);
 			
+		} catch (Exception e) {
+			return new GenericResponse<>("The error found in the deleteFoodItem service!!", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
+		}
+	}
+	
+	@PatchMapping(AppConstant.SUBMIT_FOOD_RATING)
+	public GenericResponse<Boolean> submitRating(@RequestBody SubmitFoodRatingRequest request){
+		try {
+			Boolean foodRating = foodItemService.submitFoodRating(request);
+			
+			return new GenericResponse<>("The rating submitted successfully!!", StatusCode.of(HttpStatus.OK), foodRating);
 		} catch (Exception e) {
 			return new GenericResponse<>("The error found in the deleteFoodItem service!!", StatusCode.of(HttpStatus.INTERNAL_SERVER_ERROR), null);
 		}

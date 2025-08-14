@@ -12,6 +12,7 @@ public interface FoodItemRepositories {
 	List<FoodItem> getAllFoodItems();
 	List<FoodItem> findAllByRestaurant_Id(UUID restaurantId);
 	List<FoodItem> findAllByCategory_Id(UUID categoryId);
+	List<FoodItem> saveAll(List<FoodItem> foodItems);
 	
 	FoodItem findById(UUID food_item_id);
 }
