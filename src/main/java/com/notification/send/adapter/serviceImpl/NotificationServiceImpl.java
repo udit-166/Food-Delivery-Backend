@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.notification.send.adapter.constant.AppConstant;
 import com.notification.send.adapter.models.EmailNotificationDTO;
 import com.notification.send.adapter.models.FcmNotification;
-import com.notification.send.adapter.models.HandleOrderRequest;
+import com.notification.send.adapter.models.HandleNotificationRequest;
 import com.notification.send.adapter.service.NotificationService;
 import com.notification.send.core.usecase.NotificationUsecase;
 import com.twilio.Twilio;
@@ -59,7 +60,7 @@ public class NotificationServiceImpl implements NotificationService{
 		 Twilio.init(AppConstant.TWILIO_SID_ACCOUNT, AppConstant.TWILIO_AUTH_TOKEN);
 	        Verification verification = Verification.creator(
 	                AppConstant.TWILIO_VERIFY_SID_ACCOUNT,
-	                phone_number,
+	                "+91"+phone_number,
 	                "sms")
 	            .create();
 
@@ -84,8 +85,8 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@KafkaListener(topics = "handle_order_placed", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
-	public void handleOrderPlaced(HandleOrderRequest payload) {
+	@KafkaListener(topics = "handle_order_placed", groupId = "notification-group", containerFactory = "kafkaListenerHandleOrderNotificationContainerFactory")
+	public void handleOrderPlaced(HandleNotificationRequest payload) {
 		try {
 			String title = "Order Placed";
 			String body = "Your Order with orderId "+ payload.getOrderId()+" is placed.";
@@ -98,8 +99,8 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@KafkaListener(topics = "handle_order_dispatched", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
-	public void handleOrderDispatched(HandleOrderRequest payload) {
+	@KafkaListener(topics = "handle_order_dispatched", groupId = "notification-group", containerFactory = "kafkaListenerHandleOrderNotificationContainerFactory")
+	public void handleOrderDispatched(HandleNotificationRequest payload) {
 		try {
 			String title = "Order Dispatched";
 			String body = "Your Order with orderId "+ payload.getOrderId()+" is dispatched.";
@@ -112,8 +113,8 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@KafkaListener(topics = "handle_order_assigned_to_delivery_person", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
-	public void handleOrderAssignedToDeliveryPerson(HandleOrderRequest payload) {
+	@KafkaListener(topics = "handle_order_assigned_to_delivery_person", groupId = "notification-group", containerFactory = "kafkaListenerHandleOrderNotificationContainerFactory")
+	public void handleOrderAssignedToDeliveryPerson(HandleNotificationRequest payload) {
 		try {
 			String title = "Delivery Person Is Here";
 			String body = "The delivery person is assigned for your order and will deliver in 10 minutes.";
@@ -126,8 +127,8 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@KafkaListener(topics = "handle_order_delivered", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
-	public void handleOrderDilveredNotification(HandleOrderRequest payload) {
+	@KafkaListener(topics = "handle_order_delivered", groupId = "notification-group", containerFactory = "kafkaListenerHandleOrderNotificationContainerFactory")
+	public void handleOrderDilveredNotification(HandleNotificationRequest payload) {
 		try {
 			String title = "Order Delivered";
 			String body = "Your order has been delivered to you. Please rate us and share your food taste and expirence with us/.";
@@ -140,8 +141,8 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@KafkaListener(topics = "handle_payment_failed", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
-	public void handlePaymentFailedNotification(HandleOrderRequest payload) {
+	@KafkaListener(topics = "handle_payment_failed", groupId = "notification-group", containerFactory = "kafkaListenerHandleOrderNotificationContainerFactory")
+	public void handlePaymentFailedNotification(HandleNotificationRequest payload) {
 		try {
 			String title = "Order Payment Failed!";
 			String body = "Your payment is failed. Your money is not debited. Please try again to confirmed the order.";
@@ -154,8 +155,8 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	@KafkaListener(topics = "handle_payment_success", groupId = "notification-group", containerFactory = "kafkaListenerNotificationContainerFactory")
-	public void handlePaymentSuccessNotification(HandleOrderRequest payload) {
+	@KafkaListener(topics = "handle_payment_success", groupId = "notification-group", containerFactory = "kafkaListenerHandleOrderNotificationContainerFactory")
+	public void handlePaymentSuccessNotification(HandleNotificationRequest payload) {
 		try {
 			String title = "Order Payment Successfully Done!";
 			String body = "Your payment is successfully done.";
@@ -172,6 +173,7 @@ public class NotificationServiceImpl implements NotificationService{
 //		// TODO Auto-generated method stub
 //		
 //	}
+	
 	
 
 }

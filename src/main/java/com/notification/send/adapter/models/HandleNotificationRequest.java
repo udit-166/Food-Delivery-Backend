@@ -3,7 +3,7 @@ package com.notification.send.adapter.models;
 import lombok.Data;
 
 @Data
-public class HandleOrderRequest {
+public class HandleNotificationRequest {
 
 	private String orderId;
 	

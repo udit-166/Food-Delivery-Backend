@@ -2,7 +2,7 @@ package com.notification.send.adapter.service;
 
 import com.notification.send.adapter.models.EmailNotificationDTO;
 import com.notification.send.adapter.models.FcmNotification;
-import com.notification.send.adapter.models.HandleOrderRequest;
+import com.notification.send.adapter.models.HandleNotificationRequest;
 
 
 public interface NotificationService {
@@ -15,18 +15,18 @@ public interface NotificationService {
 	
 	public boolean sendNotification(FcmNotification notificartionData);
 	
-	public void handleOrderPlaced(HandleOrderRequest payload);
+	public void handleOrderPlaced(HandleNotificationRequest payload);
 	
 	
-	public void handleOrderDispatched(HandleOrderRequest payload);
+	public void handleOrderDispatched(HandleNotificationRequest payload);
 	
-	public void handleOrderAssignedToDeliveryPerson(HandleOrderRequest payload);
+	public void handleOrderAssignedToDeliveryPerson(HandleNotificationRequest payload);
 	
-	public void handleOrderDilveredNotification(HandleOrderRequest payload);
+	public void handleOrderDilveredNotification(HandleNotificationRequest payload);
 	
-	public void handlePaymentFailedNotification(HandleOrderRequest payload);
+	public void handlePaymentFailedNotification(HandleNotificationRequest payload);
 	
-	public void handlePaymentSuccessNotification(HandleOrderRequest payload);
+	public void handlePaymentSuccessNotification(HandleNotificationRequest payload);
 	
 //	public void handlePaymentPendingNotification(HandleOrderRequest payload);
 	
