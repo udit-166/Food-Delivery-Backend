@@ -23,7 +23,7 @@ It demonstrates real-world microservices patterns:
 - Twilio Account
 
 ## 2️⃣ Clone Repository
-git clone https://github.com/your-username/food-delivery-backend.git
+git clone https://github.com/udit-166/food-delivery-backend.git
 cd food-delivery-backend
 
 ## 3️⃣ Run Services
@@ -152,16 +152,14 @@ mvn spring-boot:run
 
 ### 6) **service-api-gateway**
 - Central routing & JWT validation (and recommended: rate-limiting & CORS)
-
-
-** Branch Link **: [Api-Gateway_Branch](https://github.com/udit-166/Food-Delivery-Backend/tree/service-api-gateway)
+- Branch Link: [Api-Gateway_Branch](https://github.com/udit-166/Food-Delivery-Backend/tree/service-api-gateway)
 
 ### 7) **service-registry**
 - Eureka-based service discovery
-** Branch Link **: [Service-Registration-Branch](https://github.com/udit-166/Food-Delivery-Backend/tree/service-registration)
+- Branch Link: [Service-Registration-Branch](https://github.com/udit-166/Food-Delivery-Backend/tree/service-registration)
 ### 8) **service-config**
 - Centralized config (use env vars or Vault for secrets)
-** Branch Link **: [Service-Config-Branch](https://github.com/udit-166/Food-Delivery-Backend/tree/service-config)
+- Branch Link: [Service-Config-Branch](https://github.com/udit-166/Food-Delivery-Backend/tree/service-config)
 ---
 
 ## 🔗 Inter-Service Dependencies (Bidirectional Where Applicable)
